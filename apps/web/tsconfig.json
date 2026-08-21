@@ -1,0 +1,65 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "../../",
+    "paths": {
+      "@/actions/*": [
+        "actions/*"
+      ],
+      "@/app/*": [
+        "apps/web/app/*"
+      ],
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/config/*": [
+        "config/*"
+      ],
+      "@/db/*": [
+        "db/*"
+      ],
+      "@/features/*": [
+        "features/*"
+      ],
+      "@/hooks/*": [
+        "hooks/*"
+      ],
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/server/*": [
+        "server/*"
+      ],
+      "@/types/*": [
+        "types/*"
+      ]
+    },
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "isolatedModules": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../components/**/*.ts",
+    "../../components/**/*.tsx",
+    "../../config/**/*.ts",
+    "../../db/**/*.ts",
+    "../../features/**/*.ts",
+    "../../features/**/*.tsx",
+    "../../lib/**/*.ts",
+    "../../server/**/*.ts",
+    "../../types/**/*.d.ts",
+    "../../types/**/*.ts",
+    "../../types/**/*.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
