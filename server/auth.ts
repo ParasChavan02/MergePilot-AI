@@ -20,6 +20,8 @@ export const {
   signOut
 } = NextAuth({
   adapter,
+  trustHost: true,
+  secret: env.AUTH_SECRET,
 
   session: {
     strategy: "jwt"
@@ -29,8 +31,6 @@ export const {
     GitHub({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-      issuer: "https://github.com/login/oauth",
-
       authorization: {
         params: {
           scope: "read:user user:email repo"
