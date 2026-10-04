@@ -1,11 +1,17 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Footer } from "@/features/marketing/footer";
 import { Navbar } from "@/features/marketing/navbar";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter"
+});
 
 export const metadata: Metadata = {
   title: "MergePilot AI | AI-Powered GitHub PR Intelligence",
@@ -23,7 +29,9 @@ export default function MarketingLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-foreground/20">
+      <body
+        className={`${inter.variable} min-h-screen bg-background font-sans text-foreground antialiased selection:bg-foreground/20`}
+      >
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">
             <Navbar />
