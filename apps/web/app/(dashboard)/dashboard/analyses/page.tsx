@@ -1,14 +1,22 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnalysesList } from "@/features/analyses/analyses-list";
 
 export default function AnalysesPage() {
   return (
-    <Card className="bg-card/80">
-      <CardHeader>
-        <CardTitle>Analyses</CardTitle>
-      </CardHeader>
-      <CardContent className="text-sm text-muted-foreground">
-        Analysis history will appear here once PR ingestion and AI processing are wired up.
-      </CardContent>
-    </Card>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <header className="space-y-1">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Intelligence History
+        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+          Pull Request Analyses
+        </h1>
+        <p className="max-w-2xl text-xs text-muted-foreground md:text-sm">
+          All architectural intelligence reports, risk scores, breaking change evaluations, and test
+          gap audits.
+        </p>
+      </header>
+
+      <AnalysesList />
+    </div>
   );
 }

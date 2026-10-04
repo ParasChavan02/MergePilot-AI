@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
 
 import { DashboardSidebar } from "@/features/dashboard/dashboard-sidebar";
 import { DashboardTopbar } from "@/features/dashboard/dashboard-topbar";

@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
-
 import "@/app/globals.css";
+
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import type { ReactNode } from "react";
 
 import { AppProviders } from "@/components/providers/app-providers";
 import { siteConfig } from "@/config/site";
@@ -18,7 +18,10 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`
   },
-  description: siteConfig.description
+  description: siteConfig.description,
+  icons: {
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({

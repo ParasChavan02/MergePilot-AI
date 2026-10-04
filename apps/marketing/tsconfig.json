@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "../../",
+    "paths": {
+      "@/app/*": ["apps/marketing/app/*"],
+      "@/components/*": ["components/*"],
+      "@/config/*": ["config/*"],
+      "@/features/*": ["features/*"],
+      "@/lib/*": ["lib/*"]
+    },
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "isolatedModules": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../components/**/*.ts",
+    "../../components/**/*.tsx",
+    "../../config/**/*.ts",
+    "../../features/marketing/**/*.ts",
+    "../../features/marketing/**/*.tsx",
+    "../../lib/utils.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}
