@@ -89,7 +89,7 @@ Next.js Server Layer (Node.js Runtime)
 
 ## 6. Tech Stack
 
-- **Framework**: Next.js 15 (App Router with Server Components & Server Actions)
+- **Framework**: Next.js 15 (App Router with Server Components, Route Handlers, and Server Actions)
 - **Language**: TypeScript (Strict mode with `exactOptionalPropertyTypes`)
 - **UI & Styling**: Tailwind CSS, shadcn/ui primitives, Magic UI components (`NumberTicker`, `SpotlightCard`, `BorderBeam`, `GridPattern`)
 - **Authentication**: Auth.js / NextAuth v5 with GitHub OAuth provider
@@ -108,28 +108,22 @@ Next.js Server Layer (Node.js Runtime)
 mergepilot-ai/
 ├── actions/                         # Server actions (e.g. auth login/logout)
 ├── apps/
-│   └── web/
-│       ├── app/
-│       │   ├── (auth)/login/        # GitHub sign-in page
-│       │   ├── (dashboard)/
-│       │   │   └── dashboard/
-│       │   │       ├── page.tsx     # Live dashboard overview & stats
-│       │   │       ├── analyses/    # Historical analyses list
-│       │   │       ├── release-notes/# Generated release notes feed
-│       │   │       ├── repositories/# Repository browser & PR details
-│       │   │       │   └── [owner]/[repo]/pulls/
-│       │   │       │       └── [number]/ # Central PR Intelligence suite
-│       │   │       └── settings/    # Settings & roadmap preview
-│       │   ├── (marketing)/         # Landing page with realistic preview
-│       │   ├── api/
-│       │   │   ├── analysis/        # Analyses listing & execution
-│       │   │   ├── auth/            # Auth.js route handler
-│       │   │   ├── github/          # Secure server-side GitHub routes
-│       │   │   └── release-notes/   # Release notes retrieval
-│       │   ├── globals.css          # Design system variables & animations
-│       │   └── layout.tsx           # Root application shell
-│       ├── middleware.ts            # Route protection middleware
-│       └── next.config.ts           # Next.js configuration
+│   ├── web/                         # Authenticated dashboard and API server
+│   │   ├── app/
+│   │   │   ├── (auth)/login/        # GitHub sign-in page
+│   │   │   ├── (dashboard)/dashboard/
+│   │   │   │   ├── analyses/        # Historical analyses
+│   │   │   │   ├── release-notes/   # Generated release notes
+│   │   │   │   ├── repositories/    # Repository and pull request browser
+│   │   │   │   └── settings/        # Settings and roadmap preview
+│   │   │   ├── (marketing)/         # Marketing page served by the web app
+│   │   │   ├── docs/                # Product and API documentation
+│   │   │   └── api/                 # Auth, GitHub, analysis, and release-note APIs
+│   │   ├── middleware.ts            # Route protection middleware
+│   │   └── next.config.ts           # Next.js configuration
+│   └── marketing/                   # Optional static marketing deployment
+│       ├── app/                     # Standalone landing page
+│       └── next.config.ts           # Static export configuration
 ├── components/
 │   ├── auth/                        # Login components
 │   ├── magicui/                     # Magic UI animations & effects
@@ -172,9 +166,11 @@ AUTH_SECRET="your-32-character-secret-generated-via-openssl-rand-hex-32"
 GITHUB_CLIENT_ID="your_github_oauth_client_id"
 GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
 
-# Google Gemini API
+# Google Gemini API (optional for deterministic-only/local development)
 GEMINI_API_KEY="your_google_gemini_api_key"
 ```
+
+`DATABASE_URL`, `AUTH_SECRET`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET` are required by the server. `GEMINI_API_KEY` is optional, but AI-powered analysis and generated release notes require it.
 
 ---
 
@@ -234,8 +230,7 @@ cd mergepilot-ai
 pnpm install
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env with your credentials
+# Create .env in the repository root and add the variables from section 8.
 
 # 4. Generate and push database schema
 pnpm db:generate
@@ -245,7 +240,7 @@ pnpm db:push
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser. To run the standalone marketing app instead, use `pnpm dev:marketing` and open [http://localhost:3001](http://localhost:3001).
 
 ---
 
@@ -258,7 +253,7 @@ The test suite validates data normalization, error mapping, risk evaluation, and
 pnpm test
 
 # Run tests in watch mode
-pnpm vitest
+pnpm exec vitest
 ```
 
 ---
