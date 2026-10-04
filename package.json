@@ -17,7 +17,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.NODE_ENV === 'production' || process.env.CI || process.env.RENDER) process.exit(0); try { require('child_process').execSync('pnpm exec husky', { stdio: 'inherit' }); } catch {}\""
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

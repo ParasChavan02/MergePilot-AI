@@ -3,7 +3,7 @@ services:
   - type: web
     name: mergepilot-marketing
     runtime: static
-    buildCommand: pnpm --dir apps/marketing build
+    buildCommand: pnpm install --frozen-lockfile --prod=false && pnpm --dir apps/marketing build
     staticPublishPath: ./apps/marketing/out
     headers:
       - path: /*
@@ -18,7 +18,7 @@ services:
     name: mergepilot-app
     runtime: node
     plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm db:push && pnpm build
+    buildCommand: pnpm install --frozen-lockfile --prod=false && pnpm db:push && pnpm build
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV
