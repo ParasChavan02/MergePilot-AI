@@ -281,30 +281,7 @@ pnpm start
 
 ---
 
-## 15. Render Deployment (Blueprint with Dual-Hosting)
-
-MergePilot AI includes a `render.yaml` Blueprint that deploys:
-
-1. **Render Static Site (`mergepilot-marketing`)**: Fast, CDN-hosted marketing landing page exported statically (`apps/marketing/out`).
-2. **Render Web Service (`mergepilot-app`)**: Node.js dynamic server for the dashboard, GitHub OAuth, and AI intelligence suite (`apps/web`).
-3. **Render PostgreSQL (`mergepilot-db`)**: Managed relational database with auto-generated credentials.
-
-### Deploying with Render Blueprint:
-
-1. Push your repository to GitHub.
-2. In the [Render Dashboard](https://dashboard.render.com), click **New +** > **Blueprint**.
-3. Select your repository. Render automatically reads `render.yaml` and sets up all 3 services.
-4. Fill in the prompted secret environment variables:
-   - `GITHUB_CLIENT_ID`
-   - `GITHUB_CLIENT_SECRET`
-   - `GEMINI_API_KEY`
-5. Update your GitHub OAuth Application Authorization callback URL to:
-   `https://<your-web-service>.onrender.com/api/auth/callback/github`
-6. Deploy! Render will build the static marketing site and launch the web service with database migrations automatically.
-
----
-
-## 16. Security & Token Protection
+## 15. Security & Token Protection
 
 - **Server-Only Credentials**: GitHub OAuth access tokens, Gemini API keys, and database connection strings are never exposed to client-side bundles or headers.
 - **Session Protection**: All `/dashboard/*` routes and `/api/*` intelligence routes authenticate via server-side session cookies.
