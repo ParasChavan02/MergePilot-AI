@@ -1,10 +1,10 @@
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 
 import { env } from "@/config/env";
-import { db } from "@/server/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { db } from "@/server/db";
 
 const adapter = DrizzleAdapter(db, {
   usersTable: users,
@@ -22,13 +22,14 @@ export const {
   adapter,
 
   session: {
-    strategy: "database"
+    strategy: "jwt"
   },
 
   providers: [
     GitHub({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+      issuer: "https://github.com/login/oauth",
 
       authorization: {
         params: {
@@ -43,9 +44,17 @@ export const {
   },
 
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+
+    session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
       }
 
       return session;

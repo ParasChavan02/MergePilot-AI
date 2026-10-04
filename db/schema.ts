@@ -13,9 +13,24 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["owner", "admin", "member"]);
-export const pullRequestStateEnum = pgEnum("pull_request_state", ["open", "closed", "merged", "draft"]);
-export const analysisStatusEnum = pgEnum("analysis_status", ["pending", "processing", "complete", "failed"]);
-export const releaseNoteTypeEnum = pgEnum("release_note_type", ["bugfix", "feature", "breaking", "misc"]);
+export const pullRequestStateEnum = pgEnum("pull_request_state", [
+  "open",
+  "closed",
+  "merged",
+  "draft"
+]);
+export const analysisStatusEnum = pgEnum("analysis_status", [
+  "pending",
+  "processing",
+  "complete",
+  "failed"
+]);
+export const releaseNoteTypeEnum = pgEnum("release_note_type", [
+  "bugfix",
+  "feature",
+  "breaking",
+  "misc"
+]);
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -138,10 +153,34 @@ export const analyses = pgTable(
     pullRequestId: uuid("pull_request_id")
       .notNull()
       .references(() => pullRequests.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    repositoryId: uuid("repository_id").references(() => repositories.id, { onDelete: "cascade" }),
     status: analysisStatusEnum("status").notNull().default("pending"),
     summary: text("summary"),
+    riskLevel: text("risk_level").notNull().default("low"),
     riskScore: integer("risk_score").notNull().default(0),
     breakingChangeDetected: boolean("breaking_change_detected").notNull().default(false),
+    keyChanges: jsonb("key_changes").$type<string[]>().notNull().default([]),
+    breakingChanges: jsonb("breaking_changes")
+      .$type<{
+        detected: boolean;
+        severity?: string;
+        items: Array<{ area: string; reason: string; potentialImpact: string }>;
+      }>()
+      .notNull()
+      .default({ detected: false, items: [] }),
+    testGaps: jsonb("test_gaps")
+      .$type<
+        Array<{
+          test: string;
+          reason: string;
+          suggestedVerification?: string;
+        }>
+      >()
+      .notNull()
+      .default([]),
+    recommendations: jsonb("recommendations").$type<string[]>().notNull().default([]),
+    releaseNotes: text("release_notes"),
     testSuggestions: jsonb("test_suggestions").$type<string[]>().notNull().default([]),
     releaseNotesDraft: text("release_notes_draft"),
     modelVersion: text("model_version"),
@@ -152,6 +191,8 @@ export const analyses = pgTable(
   },
   (table) => ({
     prIdx: index("analyses_pull_request_id_idx").on(table.pullRequestId),
+    userIdx: index("analyses_user_id_idx").on(table.userId),
+    repoIdx: index("analyses_repository_id_idx").on(table.repositoryId),
     statusIdx: index("analyses_status_idx").on(table.status)
   })
 );
@@ -179,7 +220,8 @@ export const releaseNotes = pgTable(
 );
 
 export const usersRelations = relations(users, ({ many }) => ({
-  repositories: many(repositories)
+  repositories: many(repositories),
+  analyses: many(analyses)
 }));
 
 export const repositoriesRelations = relations(repositories, ({ one, many }) => ({
@@ -188,7 +230,8 @@ export const repositoriesRelations = relations(repositories, ({ one, many }) => 
     references: [users.id]
   }),
   pullRequests: many(pullRequests),
-  releaseNotes: many(releaseNotes)
+  releaseNotes: many(releaseNotes),
+  analyses: many(analyses)
 }));
 
 export const pullRequestsRelations = relations(pullRequests, ({ one, many }) => ({
@@ -203,6 +246,14 @@ export const analysesRelations = relations(analyses, ({ one, many }) => ({
   pullRequest: one(pullRequests, {
     fields: [analyses.pullRequestId],
     references: [pullRequests.id]
+  }),
+  repository: one(repositories, {
+    fields: [analyses.repositoryId],
+    references: [repositories.id]
+  }),
+  user: one(users, {
+    fields: [analyses.userId],
+    references: [users.id]
   }),
   releaseNotes: many(releaseNotes)
 }));

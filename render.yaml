@@ -1,0 +1,48 @@
+services:
+  # 1. Marketing Static Site (Render Static Site)
+  - type: web
+    name: mergepilot-marketing
+    runtime: static
+    buildCommand: pnpm --dir apps/marketing build
+    staticPublishPath: ./apps/marketing/out
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+    envVars:
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://mergepilot-app.onrender.com
+
+  # 2. Main SaaS Application & Intelligence APIs (Render Web Service)
+  - type: web
+    name: mergepilot-app
+    runtime: node
+    plan: starter
+    buildCommand: pnpm install --frozen-lockfile && pnpm db:push && pnpm build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mergepilot-db
+          property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: AUTH_URL
+        value: https://mergepilot-app.onrender.com
+      - key: NEXTAUTH_URL
+        value: https://mergepilot-app.onrender.com
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+databases:
+  # 3. PostgreSQL Database
+  - name: mergepilot-db
+    databaseName: mergepilot
+    user: mergepilot_user
+    plan: starter

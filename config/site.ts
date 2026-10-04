@@ -8,3 +8,9 @@ export const siteConfig = {
     docs: "/#how-it-works"
   }
 } as const;
+
+export function getAppUrl(path: string = "/login"): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return baseUrl ? `${baseUrl.replace(/\/$/, "")}${cleanPath}` : cleanPath;
+}

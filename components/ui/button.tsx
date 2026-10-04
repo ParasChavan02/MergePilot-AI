@@ -12,23 +12,28 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  default: "bg-primary text-primary-foreground hover:opacity-90",
-  secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-  ghost: "hover:bg-muted hover:text-foreground",
-  outline: "border border-border bg-transparent hover:bg-muted"
+  default: "bg-white text-black hover:bg-zinc-200 shadow-sm font-medium",
+  secondary:
+    "border border-border bg-muted/40 text-foreground hover:bg-muted hover:border-zinc-700",
+  ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted",
+  outline:
+    "border border-border bg-transparent text-foreground hover:bg-muted hover:border-zinc-700"
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  default: "h-10 px-4 py-2",
-  sm: "h-9 rounded-md px-3",
-  lg: "h-11 px-6",
-  icon: "h-10 w-10"
+  default: "h-9 px-4 py-2 text-sm",
+  sm: "h-8 rounded-md px-3 text-xs",
+  lg: "h-11 rounded-lg px-6 text-sm font-semibold",
+  icon: "h-9 w-9 rounded-md"
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", asChild = false, children, ...props }, ref) => {
+  (
+    { className, variant = "default", size = "default", asChild = false, children, ...props },
+    ref
+  ) => {
     const classNames = cn(
-      "inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+      "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
       variantClasses[variant],
       sizeClasses[size],
       className
@@ -43,11 +48,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return (
-      <button
-        ref={ref}
-        className={classNames}
-        {...props}
-      >
+      <button ref={ref} className={classNames} {...props}>
         {children}
       </button>
     );
