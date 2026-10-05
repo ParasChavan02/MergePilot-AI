@@ -159,7 +159,7 @@ export async function persistAnalysis({
     releaseNotes: analysis.releaseNotes,
     metadata: {
       analyzedAt: analysisRecord.createdAt.toISOString(),
-      model: analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.8-flash"),
+      model: analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
       contextTruncated: analysis.metadata.contextTruncated
     }
   };
@@ -222,7 +222,7 @@ export async function getStoredAnalysisForPR(owner: string, repo: string, prNumb
     releaseNotes: analysisRecord.releaseNotes ?? analysisRecord.releaseNotesDraft ?? "",
     metadata: {
       analyzedAt: analysisRecord.createdAt.toISOString(),
-      model: analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.8-flash"),
+      model: analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
       contextTruncated: Boolean(metadata.contextTruncated)
     }
   };

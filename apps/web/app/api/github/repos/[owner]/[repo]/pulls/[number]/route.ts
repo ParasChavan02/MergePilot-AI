@@ -80,7 +80,7 @@ export async function GET(
               metadata: {
                 analyzedAt: analysisRecord.createdAt.toISOString(),
                 model:
-                  analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.8-flash"),
+                  analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
                 contextTruncated: Boolean(
                   (analysisRecord.metadata as { contextTruncated?: boolean })?.contextTruncated
                 )
