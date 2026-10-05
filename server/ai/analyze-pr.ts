@@ -1,4 +1,4 @@
-import { generateStructuredAIResponse } from "./client";
+import { DEFAULT_GEMINI_MODEL, generateStructuredAIResponse } from "./client";
 import { buildPullRequestIntelligencePrompt } from "./prompts";
 import {
   finalAnalysisResultSchema,
@@ -60,7 +60,7 @@ export async function analyzePullRequest(
     releaseNotes: parsedAi.releaseNotes,
     metadata: {
       analyzedAt: new Date().toISOString(),
-      model: "gemini-2.5-flash",
+      model: DEFAULT_GEMINI_MODEL,
       contextTruncated: context.contextTruncated,
       deterministicRiskSignals: deterministicAssessment.reasons
     }

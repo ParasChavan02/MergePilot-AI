@@ -14,11 +14,14 @@ export function getGeminiModel() {
   return new GoogleGenAI({ apiKey });
 }
 
+export const DEFAULT_GEMINI_MODEL =
+  env.GEMINI_MODEL || process.env.GEMINI_MODEL || "gemini-3.8-flash";
+
 export async function generateStructuredAIResponse(prompt: string): Promise<string> {
   const ai = getGeminiModel();
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: DEFAULT_GEMINI_MODEL,
     contents: prompt,
     config: {
       responseMimeType: "application/json",

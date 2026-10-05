@@ -79,7 +79,8 @@ export async function GET(
               releaseNotes: analysisRecord.releaseNotes ?? analysisRecord.releaseNotesDraft ?? "",
               metadata: {
                 analyzedAt: analysisRecord.createdAt.toISOString(),
-                model: analysisRecord.modelVersion ?? "gemini-2.5-flash",
+                model:
+                  analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.8-flash"),
                 contextTruncated: Boolean(
                   (analysisRecord.metadata as { contextTruncated?: boolean })?.contextTruncated
                 )

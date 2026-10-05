@@ -18,9 +18,10 @@ function getGeminiClient(): GoogleGenAI {
 
 export async function analyzeWithGemini(prompt: string): Promise<string> {
   const ai = getGeminiClient();
+  const model = env.GEMINI_MODEL || process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model,
     contents: prompt,
     config: {
       responseMimeType: "application/json"
