@@ -1,4 +1,4 @@
-import { DEFAULT_GEMINI_MODEL, generateStructuredAIResponse } from "./client";
+import { generateStructuredAIResponse } from "./client";
 import { buildPullRequestIntelligencePrompt } from "./prompts";
 import {
   finalAnalysisResultSchema,
@@ -17,7 +17,7 @@ export async function analyzePullRequest(
 
   // 2. Generate prompt and call Gemini AI
   const prompt = buildPullRequestIntelligencePrompt(context);
-  const rawResponse = await generateStructuredAIResponse(prompt);
+  const { text: rawResponse, modelUsed } = await generateStructuredAIResponse(prompt);
 
   // 3. Parse JSON safely
   let rawJson: unknown;
@@ -60,7 +60,7 @@ export async function analyzePullRequest(
     releaseNotes: parsedAi.releaseNotes,
     metadata: {
       analyzedAt: new Date().toISOString(),
-      model: DEFAULT_GEMINI_MODEL,
+      model: modelUsed,
       contextTruncated: context.contextTruncated,
       deterministicRiskSignals: deterministicAssessment.reasons
     }
