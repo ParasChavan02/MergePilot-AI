@@ -19,6 +19,7 @@ export const {
   signIn,
   signOut
 } = NextAuth({
+  debug: true,
   adapter,
   trustHost: true,
   secret: env.AUTH_SECRET,
