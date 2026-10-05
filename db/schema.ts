@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  bigint,
   boolean,
   index,
   integer,
@@ -98,7 +99,7 @@ export const repositories = pgTable(
     ownerId: text("owner_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    githubId: integer("github_id").notNull().unique(),
+    githubId: bigint("github_id", { mode: "number" }).notNull().unique(),
     name: text("name").notNull(),
     fullName: text("full_name").notNull(),
     defaultBranch: text("default_branch").notNull().default("main"),
@@ -122,7 +123,7 @@ export const pullRequests = pgTable(
     repositoryId: uuid("repository_id")
       .notNull()
       .references(() => repositories.id, { onDelete: "cascade" }),
-    githubId: integer("github_id").notNull().unique(),
+    githubId: bigint("github_id", { mode: "number" }).notNull().unique(),
     number: integer("number").notNull(),
     title: text("title").notNull(),
     body: text("body"),
