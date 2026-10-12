@@ -137,17 +137,6 @@ export function DashboardOverview() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      {/* Page Header */}
-      <div className="space-y-1">
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-          Intelligence Overview
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">Dashboard</h1>
-        <p className="text-xs text-muted-foreground">
-          Real-time metrics, risk scoring, and intelligence across your connected repositories.
-        </p>
-      </div>
-
       {/* Monochrome Statistics Grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {/* Repositories */}

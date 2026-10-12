@@ -23,7 +23,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
 
-    const [analyses, stats] = await Promise.all([getUserAnalysesList(limit), getDashboardStats()]);
+    const [analyses, stats] = await Promise.all([
+      getUserAnalysesList(session.user.id, limit),
+      getDashboardStats(session.user.id)
+    ]);
 
     return NextResponse.json({
       analyses,

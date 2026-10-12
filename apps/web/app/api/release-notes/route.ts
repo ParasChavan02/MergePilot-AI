@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "30", 10);
 
-    const notes = await getUserReleaseNotesList(limit);
+    const notes = await getUserReleaseNotesList(session.user.id, limit);
 
     return NextResponse.json({
       releaseNotes: notes,

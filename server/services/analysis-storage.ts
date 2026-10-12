@@ -228,8 +228,18 @@ export async function getStoredAnalysisForPR(owner: string, repo: string, prNumb
   };
 }
 
-export async function getUserAnalysesList(limit = 20) {
-  const recentAnalyses = await db
+export async function getUserAnalysesList(userIdOrLimit?: string | number, optionalLimit = 20) {
+  let userId: string | undefined;
+  let limit = 20;
+
+  if (typeof userIdOrLimit === "number") {
+    limit = userIdOrLimit;
+  } else if (typeof userIdOrLimit === "string") {
+    userId = userIdOrLimit;
+    limit = optionalLimit;
+  }
+
+  const query = db
     .select({
       analysis: analyses,
       pullRequest: pullRequests,
@@ -237,9 +247,11 @@ export async function getUserAnalysesList(limit = 20) {
     })
     .from(analyses)
     .innerJoin(pullRequests, eq(analyses.pullRequestId, pullRequests.id))
-    .innerJoin(repositories, eq(pullRequests.repositoryId, repositories.id))
-    .orderBy(desc(analyses.createdAt))
-    .limit(limit);
+    .innerJoin(repositories, eq(pullRequests.repositoryId, repositories.id));
+
+  const recentAnalyses = userId
+    ? await query.where(eq(analyses.userId, userId)).orderBy(desc(analyses.createdAt)).limit(limit)
+    : await query.orderBy(desc(analyses.createdAt)).limit(limit);
 
   return recentAnalyses.map(({ analysis, pullRequest, repository }) => ({
     id: analysis.id,
@@ -266,8 +278,18 @@ export async function getUserAnalysesList(limit = 20) {
   }));
 }
 
-export async function getUserReleaseNotesList(limit = 30) {
-  const notes = await db
+export async function getUserReleaseNotesList(userIdOrLimit?: string | number, optionalLimit = 30) {
+  let userId: string | undefined;
+  let limit = 30;
+
+  if (typeof userIdOrLimit === "number") {
+    limit = userIdOrLimit;
+  } else if (typeof userIdOrLimit === "string") {
+    userId = userIdOrLimit;
+    limit = optionalLimit;
+  }
+
+  const query = db
     .select({
       releaseNote: releaseNotes,
       repository: repositories,
@@ -277,9 +299,14 @@ export async function getUserReleaseNotesList(limit = 30) {
     .from(releaseNotes)
     .innerJoin(repositories, eq(releaseNotes.repositoryId, repositories.id))
     .innerJoin(analyses, eq(releaseNotes.analysisId, analyses.id))
-    .innerJoin(pullRequests, eq(analyses.pullRequestId, pullRequests.id))
-    .orderBy(desc(releaseNotes.createdAt))
-    .limit(limit);
+    .innerJoin(pullRequests, eq(analyses.pullRequestId, pullRequests.id));
+
+  const notes = userId
+    ? await query
+        .where(eq(analyses.userId, userId))
+        .orderBy(desc(releaseNotes.createdAt))
+        .limit(limit)
+    : await query.orderBy(desc(releaseNotes.createdAt)).limit(limit);
 
   return notes.map(({ releaseNote, repository, pullRequest, analysis }) => ({
     id: releaseNote.id,
@@ -293,7 +320,46 @@ export async function getUserReleaseNotesList(limit = 30) {
   }));
 }
 
-export async function getDashboardStats() {
+export async function getDashboardStats(userId?: string) {
+  if (userId) {
+    const userRepos = await db
+      .select({ id: repositories.id })
+      .from(repositories)
+      .where(eq(repositories.ownerId, userId));
+    const userRepoIds = userRepos.map((r) => r.id);
+
+    const [analyzedReposResult] = await db
+      .select({ count: sql<number>`count(distinct ${analyses.repositoryId})::int` })
+      .from(analyses)
+      .where(eq(analyses.userId, userId));
+
+    const repositoriesCount = Math.max(userRepoIds.length, analyzedReposResult?.count ?? 0);
+
+    const [openPrsResult] = await db
+      .select({ count: sql<number>`count(distinct ${pullRequests.id})::int` })
+      .from(pullRequests)
+      .innerJoin(analyses, eq(pullRequests.id, analyses.pullRequestId))
+      .where(and(eq(analyses.userId, userId), eq(pullRequests.state, "open")));
+
+    const [analyzedPrsResult] = await db
+      .select({ count: sql<number>`count(distinct ${analyses.pullRequestId})::int` })
+      .from(analyses)
+      .where(eq(analyses.userId, userId));
+
+    const [highRiskResult] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(analyses)
+      .where(and(eq(analyses.userId, userId), inArray(analyses.riskLevel, ["high", "critical"])));
+
+    return {
+      repositoriesCount,
+      openPrsCount: openPrsResult?.count ?? 0,
+      analyzedPrsCount: analyzedPrsResult?.count ?? 0,
+      highRiskCount: highRiskResult?.count ?? 0
+    };
+  }
+
+  // Fallback for global stats / tests
   const [totalReposResult] = await db
     .select({ count: sql<number>`count(distinct ${repositories.id})::int` })
     .from(repositories);
