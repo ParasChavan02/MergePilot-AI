@@ -85,7 +85,7 @@ export default function RoadmapPage() {
 
             <div className="rounded-xl border border-border/80 bg-card p-4">
               <span className="font-mono text-xs font-semibold text-foreground">
-                Gemini 2.5 Flash Structured Inference
+                Gemini 3.5 Flash Structured Inference
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
                 High-speed JSON mode analysis producing engineering summaries, key changes, and

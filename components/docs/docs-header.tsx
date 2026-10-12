@@ -1,18 +1,31 @@
 "use client";
 
+import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 
 import { DocsSearch } from "./docs-search";
+import { useDocsSidebar } from "./docs-shell";
 
 import { ThemeToggle } from "@/components/providers/theme-toggle";
 import { MergePilotLogo } from "@/components/ui/mergepilot-logo";
 
 export function DocsHeader() {
+  const { collapsed, toggleSidebar } = useDocsSidebar();
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
-        {/* Left: Brand + Docs badge */}
+        {/* Left: Sidebar Toggle + Brand + Docs badge */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="hidden h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground md:flex"
+            title={collapsed ? "Open sidebar" : "Collapse sidebar"}
+            aria-label="Toggle sidebar"
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
           <Link href="/" className="shrink-0 transition-opacity hover:opacity-90">
             <MergePilotLogo textClassName="whitespace-nowrap text-xs sm:text-sm" />
           </Link>

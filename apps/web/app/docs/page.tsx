@@ -198,7 +198,7 @@ export default function DocsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <DocsCard
             title="Architecture"
-            description="Explore the Next.js App Router, Auth.js, Drizzle ORM, and Gemini 2.5 Flash pipeline."
+            description="Explore the Next.js App Router, Auth.js, Drizzle ORM, and Gemini 3.5 Flash pipeline."
             href="/docs/architecture"
             icon={Cpu}
           />

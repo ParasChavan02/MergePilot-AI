@@ -74,7 +74,7 @@ Next.js Server Layer (Node.js Runtime)
      │        │
      │        ├── Risk Engine (Deterministic Structural Analysis)
      │        │
-     │        ├── AI Engine (Google Gemini 2.5 Flash via @google/genai)
+     │        ├── AI Engine (Google Gemini 3.5 Flash via @google/genai)
      │        │        │
      │        │        ▼
      │        │   Zod Schema Validation & Risk Synthesis
@@ -94,7 +94,7 @@ Next.js Server Layer (Node.js Runtime)
 - **UI & Styling**: Tailwind CSS, shadcn/ui primitives, Magic UI components (`NumberTicker`, `SpotlightCard`, `BorderBeam`, `GridPattern`)
 - **Authentication**: Auth.js / NextAuth v5 with GitHub OAuth provider
 - **Database & ORM**: PostgreSQL with Drizzle ORM
-- **AI Engine**: Google Gemini API (`@google/genai`) with Gemini 2.5 Flash
+- **AI Engine**: Google Gemini API (`@google/genai`) with Gemini 3.5 Flash
 - **GitHub Integration**: `@octokit/rest` with server-side token retrieval
 - **Validation**: Zod schema parsing across all external API and AI boundaries
 - **Testing**: Vitest for unit and integration testing
@@ -215,7 +215,7 @@ pnpm db:studio
 
 1. Obtain an API key from Google AI Studio: [https://aistudio.google.com/](https://aistudio.google.com/).
 2. Add the key to your `.env` as `GEMINI_API_KEY`.
-3. MergePilot uses the high-performance `gemini-2.5-flash` model with JSON schema enforcement for sub-second, highly structured analysis.
+3. MergePilot uses the high-performance `gemini-3.5-flash` model with JSON schema enforcement for sub-second, highly structured analysis.
 
 ---
 

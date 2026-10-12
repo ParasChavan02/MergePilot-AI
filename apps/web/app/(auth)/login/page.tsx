@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: Readonly<LoginPageProp
         <div className="space-y-2 text-center">
           <Link
             href="/"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground shadow-sm transition-transform hover:scale-105 dark:border-[#262626] dark:bg-[#0A0A0A]"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground shadow-sm transition-transform hover:scale-105"
           >
             <MergePilotSymbol className="h-5 w-5" />
           </Link>
@@ -36,7 +36,7 @@ export default async function LoginPage({ searchParams }: Readonly<LoginPageProp
         </div>
 
         {/* Centered Auth Card */}
-        <div className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-xl dark:border-[#262626] dark:bg-[#0A0A0A] sm:p-7">
+        <div className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-7">
           <div className="space-y-1 text-center">
             <p className="text-sm font-semibold text-foreground">Sign in to your account</p>
             <p className="text-xs text-muted-foreground">

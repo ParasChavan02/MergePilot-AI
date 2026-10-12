@@ -193,7 +193,7 @@ export default function QuickStartPage() {
               Runs the TypeScript deterministic risk engine to scan for sensitive code paths and
               destructive SQL keywords.
             </li>
-            <li>Dispatches a structured prompt to Google Gemini 2.5 Flash.</li>
+            <li>Dispatches a structured prompt to Google Gemini 3.5 Flash.</li>
             <li>
               Validates the AI response against Zod schemas and calculates composite calibrated
               risk.

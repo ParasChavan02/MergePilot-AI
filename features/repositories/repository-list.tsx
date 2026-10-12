@@ -12,10 +12,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatRelativeTime } from "@/lib/utils";
 import type { GitHubRepository } from "@/server/github/types";
 
+interface RepositoryError {
+  message: string;
+  code?: string;
+}
+
 export function RepositoryList() {
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<{ message: string; code?: string } | null>(null);
+  const [error, setError] = useState<RepositoryError | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
 
@@ -27,13 +32,19 @@ export function RepositoryList() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to load repositories");
+        const err: RepositoryError = {
+          message: data.error || "Failed to load repositories",
+          code: data.code
+        };
+        throw err;
       }
 
       setRepositories(data.repositories || []);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to load repositories";
-      setError({ message });
+    } catch (err: any) {
+      setError({
+        message: err.message || "An unexpected error occurred while fetching repositories",
+        code: err.code
+      });
     } finally {
       setLoading(false);
     }
@@ -45,8 +56,8 @@ export function RepositoryList() {
 
   const languages = useMemo(() => {
     const set = new Set<string>();
-    repositories.forEach((r) => {
-      if (r.language) set.add(r.language);
+    repositories.forEach((repo) => {
+      if (repo.language) set.add(repo.language);
     });
     return Array.from(set).sort();
   }, [repositories]);
@@ -54,6 +65,7 @@ export function RepositoryList() {
   const filteredRepositories = useMemo(() => {
     return repositories.filter((repo) => {
       const matchesSearch =
+        repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         repo.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (repo.description && repo.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -66,7 +78,7 @@ export function RepositoryList() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Skeleton className="h-9 w-64" />
           <Skeleton className="h-9 w-32" />
         </div>
@@ -74,7 +86,7 @@ export function RepositoryList() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="space-y-3 rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]"
+              className="shadow-xs space-y-3 rounded-xl border border-border bg-card p-5"
             >
               <div className="flex items-center gap-2">
                 <Skeleton className="h-5 w-5 rounded-full" />
@@ -94,8 +106,8 @@ export function RepositoryList() {
       error.message.toLowerCase().includes("expired") || error.code === "GITHUB_CONNECTION_EXPIRED";
 
     return (
-      <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
-        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:border-[#262626] dark:bg-[#111111]">
+      <div className="shadow-xs mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
           <FolderGit2 className="h-5 w-5" />
         </div>
         <h3 className="mt-3 text-sm font-semibold text-foreground">
@@ -116,7 +128,7 @@ export function RepositoryList() {
               onClick={fetchRepositories}
               variant="outline"
               size="sm"
-              className="h-8 gap-1.5 text-xs"
+              className="shadow-xs h-8 gap-1.5 text-xs"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try Again
@@ -138,7 +150,7 @@ export function RepositoryList() {
             placeholder="Search repositories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 rounded-lg border-border bg-card pl-9 text-xs text-foreground placeholder:text-muted-foreground dark:border-[#262626] dark:bg-[#0A0A0A]"
+            className="h-9 rounded-lg border-border bg-card pl-9 text-xs text-foreground placeholder:text-muted-foreground"
           />
         </div>
 
@@ -148,7 +160,7 @@ export function RepositoryList() {
               aria-label="Filter by language"
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="h-9 rounded-lg border border-border bg-card px-3 text-xs text-foreground focus:border-foreground/40 focus:outline-none dark:border-[#262626] dark:bg-[#0A0A0A]"
+              className="h-9 rounded-lg border border-border bg-card px-3 text-xs text-foreground focus:border-foreground/40 focus:outline-none"
             >
               <option value="all">All Languages</option>
               {languages.map((lang) => (
@@ -164,7 +176,7 @@ export function RepositoryList() {
             onClick={fetchRepositories}
             title="Refresh repositories"
             aria-label="Refresh repositories"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:bg-[#111111]"
+            className="shadow-xs flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </button>
@@ -173,8 +185,8 @@ export function RepositoryList() {
 
       {/* Repositories Grid */}
       {filteredRepositories.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-12 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:border-[#262626] dark:bg-[#111111]">
+        <div className="shadow-xs rounded-2xl border border-border bg-card p-12 text-center">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
             <FolderGit2 className="h-5 w-5" />
           </div>
           <h3 className="mt-3 text-sm font-semibold text-foreground">No repositories found</h3>
@@ -191,7 +203,7 @@ export function RepositoryList() {
                 setSearchQuery("");
                 setSelectedLanguage("all");
               }}
-              className="mt-4 h-8 text-xs"
+              className="shadow-xs mt-4 h-8 text-xs"
             >
               Clear Search
             </Button>
@@ -202,7 +214,7 @@ export function RepositoryList() {
           {filteredRepositories.map((repo) => (
             <SpotlightCard
               key={repo.id}
-              className="flex flex-col justify-between border-border bg-card p-5 transition-colors hover:border-foreground/20 dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:border-zinc-700"
+              className="shadow-xs flex flex-col justify-between border-border bg-card p-5 transition-colors hover:border-foreground/20"
             >
               <div className="space-y-3">
                 {/* Header */}
@@ -212,7 +224,7 @@ export function RepositoryList() {
                     <img
                       src={repo.owner.avatar_url || "https://github.com/ghost.png"}
                       alt={repo.owner.login}
-                      className="h-5 w-5 shrink-0 rounded-full border border-border dark:border-[#262626]"
+                      className="h-5 w-5 shrink-0 rounded-full border border-border"
                     />
                     <span className="truncate font-mono text-xs text-muted-foreground">
                       {repo.owner.login}
@@ -263,7 +275,7 @@ export function RepositoryList() {
               </div>
 
               {/* Footer */}
-              <div className="mt-5 flex items-center justify-between border-t border-border pt-3.5 dark:border-[#1A1A1A]">
+              <div className="mt-5 flex items-center justify-between border-t border-border pt-3.5">
                 <span className="text-[11px] text-muted-foreground">
                   {formatRelativeTime(repo.updated_at)}
                 </span>
@@ -274,12 +286,17 @@ export function RepositoryList() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Open ${repo.full_name} on GitHub`}
-                    className="rounded-md border border-border p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground dark:border-[#262626] dark:hover:bg-[#111111]"
+                    className="shadow-xs rounded-md border border-border p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <ExternalLink className="h-3 w-3" />
                   </a>
 
-                  <Button asChild size="sm" variant="secondary" className="h-7 text-xs font-medium">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="secondary"
+                    className="shadow-xs h-7 text-xs font-medium"
+                  >
                     <Link
                       href={`/dashboard/repositories/${repo.owner.login}/${repo.name}/pulls` as any}
                     >

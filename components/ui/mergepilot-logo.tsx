@@ -39,7 +39,7 @@ export function MergePilotLogo({
 }: MergePilotLogoProps) {
   return (
     <div className={cn("inline-flex items-center gap-2.5 tracking-tight select-none", className)}>
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-colors dark:border-[#262626] dark:bg-[#0A0A0A]">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-colors">
         <MergePilotSymbol className={cn("h-4 w-4", iconClassName)} />
       </span>
       {showText && (

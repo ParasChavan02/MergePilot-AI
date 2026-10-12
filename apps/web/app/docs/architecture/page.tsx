@@ -14,7 +14,7 @@ const tocItems: TocItem[] = [
   { title: "Authentication & Token Security", id: "auth-layer" },
   { title: "GitHub Integration Layer", id: "github-layer" },
   { title: "Deterministic Risk Engine", id: "risk-engine" },
-  { title: "Gemini 2.5 Flash Pipeline", id: "ai-pipeline" },
+  { title: "Gemini 3.5 Flash Pipeline", id: "ai-pipeline" },
   { title: "Database & Relational Model", id: "database-model" }
 ];
 
@@ -47,7 +47,7 @@ export default function ArchitecturePage() {
             LLM reasoning:
           </p>
 
-          <div className="scrollbar-thin overflow-x-auto rounded-xl border border-border bg-[#F5F5F5] p-3.5 font-mono text-[11px] text-foreground dark:bg-[#111111] sm:p-5 sm:text-xs">
+          <div className="scrollbar-thin overflow-x-auto rounded-xl border border-border bg-muted/40 p-3.5 font-mono text-[11px] text-foreground sm:p-5 sm:text-xs">
             <pre className="leading-relaxed">
               {`┌────────────────────────────────────────────────────────────────────────┐
 │                          Client Web Application                        │
@@ -73,7 +73,7 @@ export default function ArchitecturePage() {
                               ▼     ▼     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │                       AI Pull Request Pipeline                         │
-│  • Google Gemini 2.5 Flash (@google/genai)                             │
+│  • Google Gemini 3.5 Flash (@google/genai)                             │
 │  • Guaranteed JSON Mode (responseMimeType: "application/json")         │
 │  • Zod Schema Validation & Guardrails                                  │
 │  • Calibrated Risk Synthesis (45% Deterministic + 55% AI)              │
@@ -128,7 +128,7 @@ export default function ArchitecturePage() {
                 AI & Static Analysis
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
-                Google Gemini 2.5 Flash via <code>@google/genai</code> combined with an in-process
+                Google Gemini 3.5 Flash via <code>@google/genai</code> combined with an in-process
                 TypeScript deterministic rule engine.
               </p>
             </div>
@@ -208,10 +208,10 @@ export default function ArchitecturePage() {
           </p>
         </section>
 
-        {/* Gemini 2.5 Flash Pipeline */}
+        {/* Gemini 3.5 Flash Pipeline */}
         <section id="ai-pipeline" className="space-y-4">
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Gemini 2.5 Flash Pipeline
+            Gemini 3.5 Flash Pipeline
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
             The AI engine in <code>server/ai/</code> connects to Google Gemini:
@@ -221,7 +221,7 @@ export default function ArchitecturePage() {
             language="typescript"
             filename="server/ai/client.ts"
             code={`const response = await ai.models.generateContent({
-  model: "gemini-2.5-flash",
+  model: "gemini-3.5-flash",
   contents: prompt,
   config: {
     responseMimeType: "application/json",

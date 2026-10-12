@@ -8,9 +8,10 @@ import {
   FileCode,
   FileText,
   History,
+  Home,
   Layers,
-  LayoutDashboard,
   Milestone,
+  PanelLeftClose,
   Rocket,
   ShieldAlert,
   Sliders,
@@ -23,6 +24,7 @@ import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
 
 import { docsNavigation } from "./docs-nav-config";
+import { useDocsSidebar } from "./docs-shell";
 
 import { cn } from "@/lib/utils";
 
@@ -50,27 +52,37 @@ const itemIcons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function DocsSidebar({ className, onItemClick }: DocsSidebarProps) {
   const pathname = usePathname();
+  const { toggleSidebar } = useDocsSidebar();
 
   return (
     <aside
       className={cn(
-        "flex w-full flex-col text-[13px] text-foreground overflow-x-hidden selection:bg-neutral-200 dark:selection:bg-[#212121]",
+        "flex w-full flex-col text-[13px] text-foreground overflow-x-hidden selection:bg-muted",
         className
       )}
     >
-      {/* Quick Action (ChatGPT "New Chat" Style) */}
-      <div className="mb-4">
+      {/* Quick Action + ChatGPT Collapse Toggle */}
+      <div className="mb-4 flex items-center gap-2">
         <Link
-          href="/dashboard"
+          href="/"
           onClick={() => onItemClick?.()}
-          className="group flex w-full items-center justify-between rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-xs font-medium text-foreground transition-all hover:border-border hover:bg-neutral-100 hover:text-foreground dark:border-[#212121] dark:bg-[#111111] dark:hover:bg-[#1a1a1a]"
+          className="group flex flex-1 items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-all hover:border-border hover:bg-muted hover:text-foreground"
         >
           <div className="flex items-center gap-2">
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
-            <span>Open Dashboard</span>
+            <Home className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+            <span>Back to Home</span>
           </div>
           <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground"
+          title="Close sidebar"
+          aria-label="Close sidebar"
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Navigation Sections */}
@@ -125,19 +137,19 @@ export function DocsSidebar({ className, onItemClick }: DocsSidebarProps) {
         ))}
       </div>
 
-      {/* ChatGPT-style Bottom Profile / App Pill */}
-      <div className="mt-8 border-t border-border/60 pt-4 dark:border-[#212121]">
+      {/* Bottom Profile / App Pill */}
+      <div className="mt-8 border-t border-border/60 pt-4">
         <Link
-          href="/dashboard"
+          href="/"
           onClick={() => onItemClick?.()}
-          className="group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-neutral-100 dark:hover:bg-[#171717]"
+          className="group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-muted"
         >
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-[11px] font-semibold text-white dark:bg-white dark:text-neutral-900">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-semibold text-background">
             MP
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-foreground">MergePilot AI</p>
-            <p className="text-[10px] text-muted-foreground">Docs & Reference</p>
+            <p className="text-[10px] text-muted-foreground">Return to Home</p>
           </div>
           <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>

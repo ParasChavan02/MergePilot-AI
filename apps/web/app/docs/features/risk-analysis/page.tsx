@@ -48,7 +48,7 @@ export default function RiskAnalysisPage() {
           <p className="text-xs leading-relaxed text-muted-foreground">
             MergePilot solves this with a hybrid architecture:
           </p>
-          <div className="rounded-xl border border-border bg-[#F5F5F5] p-4 font-mono text-xs text-foreground dark:bg-[#111111]">
+          <div className="rounded-xl border border-border bg-muted/40 p-4 font-mono text-xs text-foreground">
             Input → Deterministic Code Signals → AI Contextual Reasoning → Calibrated Blended Risk →
             Dashboard
           </div>
