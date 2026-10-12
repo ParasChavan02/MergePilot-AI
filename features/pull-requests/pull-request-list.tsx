@@ -14,6 +14,7 @@ import {
   Sparkles
 } from "lucide-react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { SpotlightCard } from "@/components/magicui/spotlight-card";
@@ -32,6 +33,7 @@ interface PullRequestListProps {
 export function PullRequestList({ owner, repo }: PullRequestListProps) {
   const [prs, setPrs] = useState<GitHubPullRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stateFilter, setStateFilter] = useState<"all" | "open" | "closed">("open");
   const [searchQuery, setSearchQuery] = useState("");
@@ -211,18 +213,57 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
         <div className="shadow-xs mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
           <AlertTriangle className="mx-auto h-7 w-7 text-muted-foreground" />
           <h3 className="mt-3 text-sm font-semibold text-foreground">
-            Unable to load pull requests
+            {error.toLowerCase().includes("expired") || error.includes("GITHUB_CONNECTION_EXPIRED")
+              ? "GitHub Connection Expired"
+              : "Unable to load pull requests"}
           </h3>
-          <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">{error}</p>
-          <Button
-            onClick={fetchPRs}
-            variant="outline"
-            size="sm"
-            className="mt-4 h-8 gap-1.5 text-xs"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Try Again
-          </Button>
+          <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
+            {error.toLowerCase().includes("expired") || error.includes("GITHUB_CONNECTION_EXPIRED")
+              ? "Your GitHub session token is invalid or has expired. Please reconnect your account."
+              : error}
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {error.toLowerCase().includes("expired") ||
+            error.includes("GITHUB_CONNECTION_EXPIRED") ? (
+              <>
+                <Button
+                  size="sm"
+                  disabled={reconnecting}
+                  onClick={async () => {
+                    try {
+                      setReconnecting(true);
+                      await signIn("github", { callbackUrl: window.location.pathname });
+                    } catch {
+                      setReconnecting(false);
+                    }
+                  }}
+                  className="shadow-xs gap-1.5 text-xs font-medium"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", reconnecting && "animate-spin")} />
+                  {reconnecting ? "Redirecting to GitHub..." : "Reconnect GitHub"}
+                </Button>
+                <Button
+                  onClick={fetchPRs}
+                  variant="outline"
+                  size="sm"
+                  className="shadow-xs h-8 gap-1.5 text-xs"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Try Again
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={fetchPRs}
+                variant="outline"
+                size="sm"
+                className="shadow-xs h-8 gap-1.5 text-xs"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Try Again
+              </Button>
+            )}
+          </div>
         </div>
       ) : filteredPRs.length === 0 ? (
         <div className="shadow-xs rounded-xl border border-border bg-card p-12 text-center">

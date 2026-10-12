@@ -23,6 +23,7 @@ import {
   Zap
 } from "lucide-react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import { BorderBeam } from "@/components/magicui/border-beam";
@@ -47,6 +48,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
   const [analysis, setAnalysis] = useState<FinalAnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedNotes, setCopiedNotes] = useState(false);
   const [expandedFiles, setExpandedFiles] = useState<Record<string, boolean>>({});
@@ -142,20 +144,61 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
   }
 
   if (error && !context) {
+    const isExpired =
+      error.toLowerCase().includes("expired") || error.includes("GITHUB_CONNECTION_EXPIRED");
+
     return (
       <div className="shadow-xs mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center">
         <AlertTriangle className="mx-auto h-7 w-7 text-muted-foreground" />
-        <h3 className="mt-3 text-sm font-semibold text-foreground">Error Loading PR Details</h3>
-        <p className="mt-1 text-xs text-muted-foreground">{error}</p>
-        <Button
-          onClick={fetchPRDetails}
-          variant="outline"
-          size="sm"
-          className="mt-4 h-8 gap-1.5 text-xs"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Try Again
-        </Button>
+        <h3 className="mt-3 text-sm font-semibold text-foreground">
+          {isExpired ? "GitHub Connection Expired" : "Error Loading PR Details"}
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {isExpired
+            ? "Your GitHub session token is invalid or has expired. Please reconnect your account."
+            : error}
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {isExpired ? (
+            <>
+              <Button
+                size="sm"
+                disabled={reconnecting}
+                onClick={async () => {
+                  try {
+                    setReconnecting(true);
+                    await signIn("github", { callbackUrl: window.location.pathname });
+                  } catch {
+                    setReconnecting(false);
+                  }
+                }}
+                className="shadow-xs gap-1.5 text-xs font-medium"
+              >
+                <RefreshCw className={cn("h-3.5 w-3.5", reconnecting && "animate-spin")} />
+                {reconnecting ? "Redirecting..." : "Reconnect GitHub"}
+              </Button>
+              <Button
+                onClick={fetchPRDetails}
+                variant="outline"
+                size="sm"
+                className="shadow-xs h-8 gap-1.5 text-xs"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Try Again
+              </Button>
+            </>
+          ) : (
+            <Button
+              onClick={fetchPRDetails}
+              variant="outline"
+              size="sm"
+              className="shadow-xs h-8 gap-1.5 text-xs"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Try Again
+            </Button>
+          )}
+        </div>
       </div>
     );
   }

@@ -2,6 +2,7 @@
 
 import { ExternalLink, FolderGit2, GitFork, Lock, RefreshCw, Search, Star } from "lucide-react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { SpotlightCard } from "@/components/magicui/spotlight-card";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatRelativeTime } from "@/lib/utils";
+import { cn, formatRelativeTime } from "@/lib/utils";
 import type { GitHubRepository } from "@/server/github/types";
 
 interface RepositoryError {
@@ -20,6 +21,7 @@ interface RepositoryError {
 export function RepositoryList() {
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<RepositoryError | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
@@ -118,11 +120,35 @@ export function RepositoryList() {
             ? "Your GitHub session token is invalid or has expired. Please sign in again to refresh your connection."
             : error.message}
         </p>
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           {isExpired ? (
-            <Button asChild size="sm">
-              <Link href="/login">Reconnect GitHub</Link>
-            </Button>
+            <>
+              <Button
+                size="sm"
+                disabled={reconnecting}
+                onClick={async () => {
+                  try {
+                    setReconnecting(true);
+                    await signIn("github", { callbackUrl: "/dashboard/repositories" });
+                  } catch {
+                    setReconnecting(false);
+                  }
+                }}
+                className="shadow-xs gap-1.5 text-xs font-medium"
+              >
+                <RefreshCw className={cn("h-3.5 w-3.5", reconnecting && "animate-spin")} />
+                {reconnecting ? "Redirecting to GitHub..." : "Reconnect GitHub"}
+              </Button>
+              <Button
+                onClick={fetchRepositories}
+                variant="outline"
+                size="sm"
+                className="shadow-xs h-8 gap-1.5 text-xs"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Try Again
+              </Button>
+            </>
           ) : (
             <Button
               onClick={fetchRepositories}

@@ -5,5 +5,13 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
     };
+    accessToken?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string;
+    accessToken?: string;
   }
 }
