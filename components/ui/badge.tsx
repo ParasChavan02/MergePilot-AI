@@ -11,16 +11,18 @@ const badgeVariants = cva(
         default: "border-border bg-muted/60 text-muted-foreground",
         secondary: "border-border bg-muted text-foreground",
         outline: "border-border text-foreground",
-        low: "border-border bg-muted/50 text-muted-foreground",
+        low: "border-emerald-500/25 bg-emerald-500/10 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300",
         medium:
-          "border-zinc-300 bg-zinc-100 font-medium text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-200",
-        high: "border-zinc-400 bg-zinc-200 font-semibold text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100",
+          "border-amber-500/25 bg-amber-500/10 font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300",
+        high: "border-orange-500/30 bg-orange-500/10 font-semibold text-orange-800 dark:border-orange-500/35 dark:bg-orange-500/15 dark:text-orange-300",
         critical:
-          "shadow-xs border-zinc-900 bg-zinc-900 font-semibold text-white dark:border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900",
-        open: "border-zinc-700/60 bg-zinc-800/30 text-zinc-200",
-        closed: "border-zinc-800/60 bg-zinc-900/40 text-zinc-500",
-        merged: "border-zinc-700/60 bg-zinc-800/40 text-zinc-300",
-        draft: "border-zinc-800/60 bg-zinc-900/40 text-zinc-500"
+          "border-rose-500/35 bg-rose-500/15 font-semibold text-rose-800 dark:border-rose-500/40 dark:bg-rose-500/25 dark:text-rose-200",
+        open: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300",
+        closed:
+          "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300",
+        merged:
+          "border-purple-500/25 bg-purple-500/10 text-purple-700 dark:border-purple-500/30 dark:bg-purple-500/15 dark:text-purple-300",
+        draft: "border-border bg-muted/60 text-muted-foreground"
       }
     },
     defaultVariants: {

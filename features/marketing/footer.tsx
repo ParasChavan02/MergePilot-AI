@@ -92,7 +92,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-6 text-[11px] text-muted-foreground md:flex-row">
           <p>© {new Date().getFullYear()} MergePilot AI. All rights reserved.</p>
-          <p className="font-mono text-[10px]">Deterministic Signal Engine • Gemini 2.5 Flash</p>
+          <p className="font-mono text-[10px]">Deterministic Signal Engine • Gemini 3.5 Flash</p>
         </div>
       </div>
     </footer>

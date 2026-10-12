@@ -82,12 +82,9 @@ export function DashboardOverview() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="space-y-2 rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]"
-            >
+            <div key={i} className="space-y-2 rounded-xl border border-border bg-card p-5">
               <Skeleton className="h-3 w-20" />
               <Skeleton className="h-8 w-14" />
               <Skeleton className="h-3 w-32" />
@@ -98,10 +95,7 @@ export function DashboardOverview() {
           <Skeleton className="h-5 w-44" />
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="space-y-2 rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]"
-              >
+              <div key={i} className="space-y-2 rounded-xl border border-border bg-card p-5">
                 <Skeleton className="h-4 w-64" />
                 <Skeleton className="h-3 w-full" />
               </div>
@@ -114,7 +108,7 @@ export function DashboardOverview() {
 
   if (error || !data) {
     return (
-      <div className="mx-auto max-w-xl rounded-xl border border-border bg-card p-8 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
+      <div className="mx-auto max-w-xl rounded-xl border border-border bg-card p-8 text-center">
         <AlertTriangle className="mx-auto h-7 w-7 text-muted-foreground" />
         <h3 className="mt-3 text-sm font-semibold text-foreground">
           Unable to load dashboard intelligence
@@ -137,21 +131,10 @@ export function DashboardOverview() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      {/* Page Header */}
-      <div className="space-y-1">
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-          Intelligence Overview
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">Dashboard</h1>
-        <p className="text-xs text-muted-foreground">
-          Real-time metrics, risk scoring, and intelligence across your connected repositories.
-        </p>
-      </div>
-
       {/* Monochrome Statistics Grid */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Repositories */}
-        <SpotlightCard className="border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <SpotlightCard className="border-border bg-card p-5">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="font-mono text-[11px] font-medium uppercase tracking-wider">
               Repositories
@@ -165,7 +148,7 @@ export function DashboardOverview() {
         </SpotlightCard>
 
         {/* Open PRs */}
-        <SpotlightCard className="border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <SpotlightCard className="border-border bg-card p-5">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="font-mono text-[11px] font-medium uppercase tracking-wider">
               Open PRs
@@ -179,7 +162,7 @@ export function DashboardOverview() {
         </SpotlightCard>
 
         {/* Analyzed PRs */}
-        <SpotlightCard className="border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <SpotlightCard className="border-border bg-card p-5">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="font-mono text-[11px] font-medium uppercase tracking-wider">
               Analyzed
@@ -193,7 +176,7 @@ export function DashboardOverview() {
         </SpotlightCard>
 
         {/* High Risk PRs */}
-        <SpotlightCard className="border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <SpotlightCard className="border-border bg-card p-5">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="font-mono text-[11px] font-medium uppercase tracking-wider">
               High Risk
@@ -209,7 +192,7 @@ export function DashboardOverview() {
 
       {/* Quick Navigation Action Cards */}
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-5">
           <div className="space-y-1">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <FolderGit2 className="h-4 w-4 text-muted-foreground" />
@@ -230,7 +213,7 @@ export function DashboardOverview() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-5">
           <div className="space-y-1">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <Sparkles className="h-4 w-4 text-muted-foreground" />
@@ -275,8 +258,8 @@ export function DashboardOverview() {
         </div>
 
         {analyses.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card p-12 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:border-[#262626] dark:bg-[#111111]">
+          <div className="rounded-xl border border-border bg-card p-12 text-center">
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
               <Zap className="h-5 w-5" />
             </div>
             <h3 className="mt-3 text-sm font-semibold text-foreground">
@@ -297,7 +280,7 @@ export function DashboardOverview() {
             {analyses.map((item) => (
               <SpotlightCard
                 key={item.id}
-                className="border-border bg-card p-5 transition-colors hover:border-foreground/20 dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:border-zinc-700"
+                className="border-border bg-card p-5 transition-colors hover:border-foreground/20"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0 flex-1 space-y-1.5">

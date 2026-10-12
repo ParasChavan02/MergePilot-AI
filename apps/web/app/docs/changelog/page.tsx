@@ -64,7 +64,7 @@ export default function ChangelogPage() {
                 queries, and test omission flags.
               </li>
               <li>
-                <strong className="text-foreground">Google Gemini 2.5 Flash Pipeline:</strong>{" "}
+                <strong className="text-foreground">Google Gemini 3.5 Flash Pipeline:</strong>{" "}
                 Structured JSON analysis producing high-signal summaries, breaking changes, test gap
                 identification, and markdown release notes.
               </li>

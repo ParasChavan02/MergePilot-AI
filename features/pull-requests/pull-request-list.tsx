@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatRelativeTime } from "@/lib/utils";
+import { cn, formatRelativeTime } from "@/lib/utils";
 import type { GitHubPullRequest } from "@/server/github/types";
 
 interface PullRequestListProps {
@@ -87,22 +87,22 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
       {/* Breadcrumbs and Repo Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 font-mono text-xs text-zinc-500">
+          <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
             <Link
               href="/dashboard/repositories"
-              className="inline-flex items-center gap-1 transition-colors hover:text-zinc-200"
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
             >
-              <ArrowLeft className="h-3 w-3" />
+              <ArrowLeft className="h-3.5 w-3.5" />
               Repositories
             </Link>
-            <span>/</span>
+            <span className="text-border">/</span>
             <span>{owner}</span>
-            <span>/</span>
-            <span className="font-semibold text-zinc-200">{repo}</span>
+            <span className="text-border">/</span>
+            <span className="font-semibold text-foreground">{repo}</span>
           </div>
 
-          <h1 className="mt-2 flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white md:text-3xl">
-            <GitPullRequest className="h-6 w-6 text-zinc-400" />
+          <h1 className="mt-2 flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            <GitPullRequest className="h-6 w-6 text-muted-foreground" />
             Pull Requests
           </h1>
         </div>
@@ -112,17 +112,17 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
             href={`https://github.com/${owner}/${repo}/pulls`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#262626] bg-[#0A0A0A] px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:bg-[#111111] hover:text-white"
+            className="shadow-xs inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <span>GitHub</span>
-            <ExternalLink className="h-3 w-3" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </a>
 
           <Button
             variant="outline"
             size="sm"
             onClick={fetchPRs}
-            className="h-8 gap-1.5 border-[#262626] text-xs"
+            className="shadow-xs h-8 gap-1.5 text-xs"
           >
             <RefreshCw className="h-3 w-3" />
             <span>Refresh</span>
@@ -132,27 +132,29 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
 
       {/* Stats Summary Bar */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-4">
-          <p className="font-mono text-[11px] uppercase text-zinc-500">Open PRs</p>
-          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-white">
+        <div className="shadow-xs rounded-xl border border-border bg-card p-4">
+          <p className="font-mono text-[11px] uppercase text-muted-foreground">Open PRs</p>
+          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-foreground">
             {stats.open}
           </p>
         </div>
-        <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-4">
-          <p className="font-mono text-[11px] uppercase text-zinc-500">Closed / Merged</p>
-          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-zinc-400">
+        <div className="shadow-xs rounded-xl border border-border bg-card p-4">
+          <p className="font-mono text-[11px] uppercase text-muted-foreground">Closed / Merged</p>
+          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-muted-foreground">
             {stats.closed}
           </p>
         </div>
-        <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-4">
-          <p className="font-mono text-[11px] uppercase text-zinc-500">Analyzed</p>
-          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-white">
+        <div className="shadow-xs rounded-xl border border-border bg-card p-4">
+          <p className="font-mono text-[11px] uppercase text-muted-foreground">Analyzed</p>
+          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-foreground">
             {stats.analyzed}
           </p>
         </div>
-        <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-4">
-          <p className="font-mono text-[11px] uppercase text-zinc-500">High / Critical Risk</p>
-          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-zinc-200">
+        <div className="shadow-xs rounded-xl border border-border bg-card p-4">
+          <p className="font-mono text-[11px] uppercase text-muted-foreground">
+            High / Critical Risk
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400">
             {stats.highRisk}
           </p>
         </div>
@@ -160,16 +162,17 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
 
       {/* Filters and Search Bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="inline-flex h-9 items-center rounded-lg border border-[#262626] bg-[#0A0A0A] p-1">
+        <div className="inline-flex h-9 items-center rounded-lg border border-border bg-muted/40 p-1">
           {(["open", "closed", "all"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setStateFilter(tab)}
-              className={`rounded-md px-3 py-1 text-xs font-medium capitalize transition-all ${
+              className={cn(
+                "rounded-md px-3 py-1 text-xs font-medium capitalize transition-all",
                 stateFilter === tab
-                  ? "bg-[#1A1A1A] font-semibold text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-300"
-              }`}
+                  ? "bg-card font-semibold text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
               {tab}
             </button>
@@ -177,13 +180,13 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
         </div>
 
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search pull requests..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 rounded-lg border-[#262626] bg-[#0A0A0A] pl-9 text-xs text-white placeholder:text-zinc-500"
+            className="h-9 rounded-lg border-border bg-card pl-9 text-xs text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -191,38 +194,43 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
       {/* PR Cards List */}
       {loading ? (
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="space-y-3 rounded-xl border border-[#262626] bg-[#0A0A0A] p-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="shadow-xs space-y-3 rounded-xl border border-border bg-card p-5"
+            >
               <div className="flex items-center gap-3">
-                <Skeleton className="h-4 w-12 bg-zinc-800" />
-                <Skeleton className="h-5 w-72 bg-zinc-800" />
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-5 w-72" />
               </div>
-              <Skeleton className="h-3 w-48 bg-zinc-800" />
+              <Skeleton className="h-3 w-48" />
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="mx-auto max-w-md rounded-xl border border-[#262626] bg-[#0A0A0A] p-8 text-center">
-          <AlertTriangle className="mx-auto h-7 w-7 text-zinc-400" />
-          <h3 className="mt-3 text-sm font-semibold text-white">Unable to load pull requests</h3>
-          <p className="mx-auto mt-1 max-w-sm text-xs text-zinc-400">{error}</p>
+        <div className="shadow-xs mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
+          <AlertTriangle className="mx-auto h-7 w-7 text-muted-foreground" />
+          <h3 className="mt-3 text-sm font-semibold text-foreground">
+            Unable to load pull requests
+          </h3>
+          <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">{error}</p>
           <Button
             onClick={fetchPRs}
             variant="outline"
             size="sm"
-            className="mt-4 h-8 gap-1.5 border-[#262626] text-xs"
+            className="mt-4 h-8 gap-1.5 text-xs"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Try Again
           </Button>
         </div>
       ) : filteredPRs.length === 0 ? (
-        <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-12 text-center">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-[#262626] bg-[#111111] text-zinc-400">
+        <div className="shadow-xs rounded-xl border border-border bg-card p-12 text-center">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
             <GitPullRequest className="h-5 w-5" />
           </div>
-          <h3 className="mt-3 text-sm font-semibold text-white">No pull requests found</h3>
-          <p className="mx-auto mt-1 max-w-sm text-xs text-zinc-400">
+          <h3 className="mt-3 text-sm font-semibold text-foreground">No pull requests found</h3>
+          <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
             {searchQuery
               ? `No pull requests matching "${searchQuery}" in state "${stateFilter}".`
               : `There are currently no ${stateFilter} pull requests in ${owner}/${repo}.`}
@@ -232,7 +240,7 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
               href={`https://github.com/${owner}/${repo}/compare`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black transition-colors hover:bg-zinc-200"
+              className="shadow-xs inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Open PR on GitHub →
             </a>
@@ -247,13 +255,13 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
             return (
               <SpotlightCard
                 key={pr.id}
-                className="border-[#262626] bg-[#0A0A0A] p-5 transition-colors hover:border-zinc-700"
+                className="shadow-xs border-border bg-card p-5 transition-colors hover:border-foreground/20"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0 flex-1 space-y-2">
                     {/* Status badges row */}
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-zinc-500">
+                      <span className="font-mono text-xs font-semibold text-muted-foreground">
                         #{pr.number}
                       </span>
 
@@ -274,10 +282,7 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
                           Risk: {riskLevel.toUpperCase()} ({pr.analysis?.riskScore}/100)
                         </Badge>
                       ) : (
-                        <Badge
-                          variant="outline"
-                          className="border-[#262626] text-[10px] text-zinc-500"
-                        >
+                        <Badge variant="outline" className="text-[10px]">
                           Not analyzed
                         </Badge>
                       )}
@@ -286,38 +291,38 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
                     {/* PR Title */}
                     <Link
                       href={`/dashboard/repositories/${owner}/${repo}/pulls/${pr.number}` as any}
-                      className="block text-sm font-semibold tracking-tight text-white transition-colors hover:text-zinc-300"
+                      className="block text-sm font-semibold tracking-tight text-foreground transition-colors hover:text-muted-foreground"
                     >
                       {pr.title}
                     </Link>
 
                     {/* Metadata line */}
-                    <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-zinc-500">
+                    <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-muted-foreground">
                       <div className="flex items-center gap-1.5 font-sans">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={pr.author.avatar_url || "https://github.com/ghost.png"}
                           alt={pr.author.login}
-                          className="h-4 w-4 rounded-full border border-[#262626]"
+                          className="h-4 w-4 rounded-full border border-border"
                         />
-                        <span className="text-zinc-400">{pr.author.login}</span>
+                        <span className="font-medium text-foreground">{pr.author.login}</span>
                       </div>
 
                       <span>•</span>
                       <span>Updated {formatRelativeTime(pr.updated_at)}</span>
 
                       <span>•</span>
-                      <span className="inline-flex items-center gap-0.5 text-zinc-300">
-                        <Plus className="h-3 w-3 text-zinc-500" />
+                      <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400">
+                        <Plus className="h-3 w-3" />
                         {pr.additions}
                       </span>
-                      <span className="inline-flex items-center gap-0.5 text-zinc-500">
-                        <Minus className="h-3 w-3 text-zinc-500" />
+                      <span className="inline-flex items-center gap-0.5 text-rose-600 dark:text-rose-400">
+                        <Minus className="h-3 w-3" />
                         {pr.deletions}
                       </span>
 
                       <span>•</span>
-                      <span className="inline-flex items-center gap-1 text-zinc-400">
+                      <span className="inline-flex items-center gap-1">
                         <FileCode className="h-3 w-3" />
                         {pr.changed_files} {pr.changed_files === 1 ? "file" : "files"}
                       </span>
@@ -331,7 +336,7 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Open on GitHub"
-                      className="rounded-lg border border-[#262626] p-2 text-zinc-400 transition-colors hover:bg-[#111111] hover:text-white"
+                      className="shadow-xs rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
@@ -340,14 +345,14 @@ export function PullRequestList({ owner, repo }: PullRequestListProps) {
                       asChild
                       size="sm"
                       variant={hasAnalysis ? "outline" : "default"}
-                      className="h-8 gap-1.5 text-xs font-medium"
+                      className="shadow-xs h-8 gap-1.5 text-xs font-medium"
                     >
                       <Link
                         href={`/dashboard/repositories/${owner}/${repo}/pulls/${pr.number}` as any}
                       >
                         {hasAnalysis ? (
                           <>
-                            <CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" />
+                            <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
                             View Intelligence
                           </>
                         ) : (

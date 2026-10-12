@@ -90,10 +90,7 @@ export function AnalysesList() {
         </div>
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="space-y-3 rounded-xl border border-border bg-card p-5 dark:border-[#262626] dark:bg-[#0A0A0A]"
-            >
+            <div key={i} className="space-y-3 rounded-xl border border-border bg-card p-5">
               <Skeleton className="h-5 w-72" />
               <Skeleton className="h-4 w-full" />
             </div>
@@ -121,12 +118,12 @@ export function AnalysesList() {
     <div className="space-y-6">
       {/* Controls */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="inline-flex h-9 items-center rounded-lg border border-border bg-card p-1 dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <div className="scrollbar-none inline-flex h-9 max-w-full items-center overflow-x-auto rounded-lg border border-border bg-card p-1">
           {(["all", "critical", "high", "medium", "low"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setRiskFilter(tab)}
-              className={`rounded-md px-3 py-1 text-xs font-medium uppercase transition-all ${
+              className={`shrink-0 rounded-md px-3 py-1 text-xs font-medium uppercase transition-all ${
                 riskFilter === tab
                   ? "shadow-xs bg-primary font-semibold text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -144,14 +141,14 @@ export function AnalysesList() {
             placeholder="Search by repo, PR title, or content..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 border-border bg-card pl-9 text-xs text-foreground placeholder:text-muted-foreground dark:border-[#262626] dark:bg-[#0A0A0A]"
+            className="h-9 border-border bg-card pl-9 text-xs text-foreground placeholder:text-muted-foreground"
           />
         </div>
       </div>
 
       {filteredAnalyses.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-12 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:border-[#262626] dark:bg-[#111111]">
+        <div className="rounded-xl border border-border bg-card p-12 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
             <Zap className="h-5 w-5" />
           </div>
           <h3 className="mt-4 text-base font-semibold text-foreground">
@@ -173,7 +170,7 @@ export function AnalysesList() {
           {filteredAnalyses.map((item) => (
             <SpotlightCard
               key={item.id}
-              className="border-border bg-card p-5 transition-all duration-200 hover:border-foreground/20 dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:border-zinc-700"
+              className="border-border bg-card p-5 transition-all duration-200 hover:border-foreground/20"
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0 flex-1 space-y-1.5">

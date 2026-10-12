@@ -12,7 +12,7 @@ const tocItems: TocItem[] = [
   { title: "Stage 1: Authentication & Token Retrieval", id: "stage-1" },
   { title: "Stage 2: Context Retrieval & Budgeting", id: "stage-2" },
   { title: "Stage 3: Deterministic Signal Scanning", id: "stage-3" },
-  { title: "Stage 4: Structured Gemini 2.5 Flash Inference", id: "stage-4" },
+  { title: "Stage 4: Structured Gemini 3.5 Flash Inference", id: "stage-4" },
   { title: "Stage 5: Composite Risk Synthesis", id: "stage-5" },
   { title: "Stage 6: Relational Persistence & Presentation", id: "stage-6" }
 ];
@@ -30,7 +30,7 @@ export default function HowItWorksPage() {
             How It Works
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            MergePilot combines deterministic static file pattern analysis with Google Gemini 2.5
+            MergePilot combines deterministic static file pattern analysis with Google Gemini 3.5
             Flash reasoning to generate structured pull request intelligence.
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function HowItWorksPage() {
             automated 6-stage pipeline:
           </p>
 
-          <div className="scrollbar-thin overflow-x-auto rounded-xl border border-border bg-[#F5F5F5] p-3.5 font-mono text-[11px] text-foreground dark:bg-[#111111] sm:p-5 sm:text-xs">
+          <div className="scrollbar-thin overflow-x-auto rounded-xl border border-border bg-muted/40 p-3.5 font-mono text-[11px] text-foreground sm:p-5 sm:text-xs">
             <pre className="leading-relaxed">
               {`GitHub Repository
        ↓
@@ -58,7 +58,7 @@ Diff Budgeting & Normalization (45,000 Patch Character Cap)
 ┌────────────────────────────────────────────────────────┐
 │               Analysis Execution Engine                │
 ├──────────────────────────┬─────────────────────────────┤
-│ Deterministic Risk Rules │ Gemini 2.5 Flash Inference │
+│ Deterministic Risk Rules │ Gemini 3.5 Flash Inference │
 │ • Sensitive file regex   │ • Architectural intent      │
 │ • Destructive SQL check  │ • Breaking contract shifts  │
 │ • Dependency manifest    │ • Missing test assertions   │
@@ -183,11 +183,11 @@ MergePilot Dashboard View`}
         {/* Stage 4 */}
         <section id="stage-4" className="space-y-4">
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Stage 4: Structured Gemini 2.5 Flash Inference
+            Stage 4: Structured Gemini 3.5 Flash Inference
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
             MergePilot formats the normalized PR context into an engineering-first prompt and sends
-            it to <strong>Google Gemini 2.5 Flash</strong> (<code>@google/genai</code>) configured
+            it to <strong>Google Gemini 3.5 Flash</strong> (<code>@google/genai</code>) configured
             with:
           </p>
           <ul className="list-disc space-y-1.5 pl-4 text-xs text-muted-foreground marker:text-foreground">

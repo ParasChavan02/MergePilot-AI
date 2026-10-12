@@ -128,7 +128,7 @@ export default function ConfigurationPage() {
               </div>
               <p className="text-xs text-muted-foreground">
                 Google AI Studio API key used by <code>@google/genai</code> to call{" "}
-                <code>gemini-2.5-flash</code> for pull request intelligence inference.
+                <code>gemini-3.5-flash</code> for pull request intelligence inference.
               </p>
             </div>
           </div>

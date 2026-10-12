@@ -1,9 +1,21 @@
 "use client";
 
-import { FileCode, FolderGit2, LayoutDashboard, LogOut, Menu, Sliders, X, Zap } from "lucide-react";
+import {
+  FileCode,
+  FolderGit2,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  PanelLeft,
+  Sliders,
+  X,
+  Zap
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+
+import { useDashboardSidebar } from "./dashboard-shell";
 
 import { logout } from "@/actions/auth";
 import { ThemeToggle } from "@/components/providers/theme-toggle";
@@ -18,6 +30,7 @@ const navItems = [
 ];
 
 export function DashboardTopbar({ userName }: Readonly<{ userName: string }>) {
+  const { collapsed, toggleSidebar } = useDashboardSidebar();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -37,13 +50,26 @@ export function DashboardTopbar({ userName }: Readonly<{ userName: string }>) {
             </button>
 
             <div className="flex items-center lg:hidden">
-              <MergePilotLogo />
+              <Link href="/" className="transition-opacity hover:opacity-90">
+                <MergePilotLogo />
+              </Link>
             </div>
 
-            {/* Desktop breadcrumb context */}
-            <div className="hidden items-center gap-2 text-xs text-muted-foreground lg:flex">
-              <span>Signed in as</span>
-              <span className="font-medium text-foreground">{userName}</span>
+            {/* Desktop Sidebar Toggle & breadcrumb context */}
+            <div className="hidden items-center gap-3 text-xs text-muted-foreground lg:flex">
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground"
+                title={collapsed ? "Open sidebar" : "Collapse sidebar"}
+                aria-label="Toggle sidebar"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+              <div className="flex items-center gap-2">
+                <span>Signed in as</span>
+                <span className="font-medium text-foreground">{userName}</span>
+              </div>
             </div>
           </div>
 
@@ -69,16 +95,22 @@ export function DashboardTopbar({ userName }: Readonly<{ userName: string }>) {
         <div className="fixed inset-0 z-50 flex lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
 
           {/* Drawer Content */}
-          <div className="relative flex w-72 flex-col justify-between border-r border-border bg-card p-5 shadow-2xl dark:border-[#262626] dark:bg-[#0A0A0A]">
+          <div className="relative flex w-72 flex-col justify-between border-r border-border bg-card p-5 shadow-2xl">
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
-                <MergePilotLogo />
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="transition-opacity hover:opacity-90"
+                >
+                  <MergePilotLogo />
+                </Link>
 
                 <button
                   type="button"
@@ -106,8 +138,8 @@ export function DashboardTopbar({ userName }: Readonly<{ userName: string }>) {
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                         isActive
-                          ? "border-l-2 border-foreground bg-muted pl-2.5 font-semibold text-foreground dark:bg-[#111111]"
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground dark:hover:bg-[#111111]/50"
+                          ? "border-l-2 border-foreground bg-muted pl-2.5 font-semibold text-foreground"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                       }`}
                     >
                       <Icon className="h-4 w-4" />

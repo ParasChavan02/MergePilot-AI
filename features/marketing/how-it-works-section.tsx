@@ -42,11 +42,11 @@ export function HowItWorksSection() {
         {steps.map((item) => (
           <div
             key={item.step}
-            className="group flex flex-col justify-between space-y-4 rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-foreground/20 dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:border-zinc-700"
+            className="group flex flex-col justify-between space-y-4 rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-foreground/20"
           >
             <div>
               <div className="flex items-center justify-between">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-muted/60 font-mono text-xs font-bold text-foreground dark:border-[#262626] dark:bg-[#111111]">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-muted/60 font-mono text-xs font-bold text-foreground">
                   {item.step}
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

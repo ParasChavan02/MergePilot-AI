@@ -67,7 +67,7 @@ export const docsNavigation: NavSection[] = [
       {
         title: "Architecture",
         href: "/docs/architecture",
-        description: "Next.js App Router, Auth.js, Drizzle ORM, Octokit, and Gemini 2.5 Flash."
+        description: "Next.js App Router, Auth.js, Drizzle ORM, Octokit, and Gemini 3.5 Flash."
       },
       {
         title: "Configuration",
@@ -189,7 +189,7 @@ export const searchIndex: SearchEntry[] = [
     title: "Architecture",
     href: "/docs/architecture",
     section: "Architecture & Setup",
-    description: "Next.js App Router, Auth.js, Drizzle ORM, Octokit, and Gemini 2.5 Flash.",
+    description: "Next.js App Router, Auth.js, Drizzle ORM, Octokit, and Gemini 3.5 Flash.",
     keywords: ["architecture", "next.js", "drizzle", "gemini", "octokit", "postgres"]
   },
   {

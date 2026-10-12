@@ -62,10 +62,10 @@ export function FeatureSection() {
           return (
             <div
               key={feature.title}
-              className="group flex flex-col justify-between rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm dark:border-[#262626] dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:bg-[#111111]"
+              className="group flex flex-col justify-between rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
             >
               <div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground transition-colors group-hover:border-foreground/30 dark:border-[#262626] dark:bg-[#111111] dark:text-zinc-300 dark:group-hover:border-zinc-600 dark:group-hover:text-white">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/60 text-foreground transition-colors group-hover:border-foreground/30">
                   <Icon className="h-4 w-4" />
                 </div>
 

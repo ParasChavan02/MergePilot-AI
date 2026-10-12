@@ -56,7 +56,7 @@ export default function ReleaseNotesPage() {
             The release note generation process follows an automated 5-step sequence:
           </p>
 
-          <div className="rounded-xl border border-border bg-[#F5F5F5] p-4 font-mono text-xs text-foreground dark:bg-[#111111]">
+          <div className="rounded-xl border border-border bg-muted/40 p-4 font-mono text-xs text-foreground">
             Pull Request Context → Change Analysis → Change Classification → Release Note Drafting →
             Relational Storage
           </div>

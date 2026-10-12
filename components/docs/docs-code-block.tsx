@@ -33,7 +33,7 @@ export function DocsCodeBlock({
   return (
     <div
       className={cn(
-        "group relative my-5 overflow-hidden rounded-xl border border-border bg-[#F5F5F5] dark:bg-[#111111]",
+        "group relative my-5 overflow-hidden rounded-xl border border-border bg-muted/40",
         className
       )}
     >

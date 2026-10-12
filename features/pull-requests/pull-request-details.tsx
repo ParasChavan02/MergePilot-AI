@@ -32,7 +32,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatRelativeTime } from "@/lib/utils";
+import { cn, formatRelativeTime } from "@/lib/utils";
 import type { FinalAnalysisResult } from "@/server/ai/schemas";
 import type { PullRequestContext } from "@/server/github/types";
 
@@ -100,15 +100,11 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
     }
   };
 
-  const handleCopyReleaseNotes = async () => {
+  const handleCopyReleaseNotes = () => {
     if (!analysis?.releaseNotes) return;
-    try {
-      await navigator.clipboard.writeText(analysis.releaseNotes);
-      setCopiedNotes(true);
-      setTimeout(() => setCopiedNotes(false), 2500);
-    } catch (err) {
-      console.error("Failed to copy release notes:", err);
-    }
+    navigator.clipboard.writeText(analysis.releaseNotes);
+    setCopiedNotes(true);
+    setTimeout(() => setCopiedNotes(false), 2000);
   };
 
   const toggleFile = (filename: string) => {
@@ -121,18 +117,24 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl space-y-6">
-        <Skeleton className="h-5 w-64 bg-zinc-800" />
-        <div className="space-y-4 rounded-xl border border-[#262626] bg-[#0A0A0A] p-6">
-          <Skeleton className="h-6 w-96 bg-zinc-800" />
-          <Skeleton className="h-4 w-64 bg-zinc-800" />
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        <div className="shadow-xs rounded-2xl border border-border bg-card p-6">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <Skeleton className="h-56 w-full rounded-xl bg-zinc-800" />
-            <Skeleton className="h-44 w-full rounded-xl bg-zinc-800" />
+            <Skeleton className="h-56 w-full rounded-2xl" />
+            <Skeleton className="h-44 w-full rounded-2xl" />
           </div>
           <div className="space-y-6">
-            <Skeleton className="h-80 w-full rounded-xl bg-zinc-800" />
+            <Skeleton className="h-80 w-full rounded-2xl" />
           </div>
         </div>
       </div>
@@ -141,14 +143,15 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
 
   if (error && !context) {
     return (
-      <div className="mx-auto max-w-md rounded-xl border border-[#262626] bg-[#0A0A0A] p-8 text-center">
-        <AlertTriangle className="mx-auto h-7 w-7 text-zinc-400" />
-        <h3 className="mt-3 text-sm font-semibold text-white">Error Loading PR Details</h3>
-        <p className="mt-1 text-xs text-zinc-400">{error}</p>
+      <div className="shadow-xs mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center">
+        <AlertTriangle className="mx-auto h-7 w-7 text-muted-foreground" />
+        <h3 className="mt-3 text-sm font-semibold text-foreground">Error Loading PR Details</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{error}</p>
         <Button
           onClick={fetchPRDetails}
           variant="outline"
-          className="mt-4 h-8 gap-1.5 border-[#262626] text-xs"
+          size="sm"
+          className="mt-4 h-8 gap-1.5 text-xs"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Try Again
@@ -163,43 +166,43 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
   const isMerged = pullRequest.state === "merged";
 
   const getRiskColor = (score: number) => {
-    if (score >= 80) return "text-rose-400";
-    if (score >= 50) return "text-amber-400";
-    return "text-zinc-200";
+    if (score >= 80) return "text-rose-600 dark:text-rose-400";
+    if (score >= 50) return "text-amber-600 dark:text-amber-400";
+    return "text-emerald-600 dark:text-emerald-400";
   };
 
   const getProgressColor = (score: number) => {
     if (score >= 80) return "bg-rose-500";
     if (score >= 50) return "bg-amber-500";
-    return "bg-zinc-300";
+    return "bg-emerald-500";
   };
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
       {/* Navigation Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-zinc-500">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-muted-foreground">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <Link
             href={`/dashboard/repositories/${owner}/${repo}/pulls` as any}
-            className="inline-flex items-center gap-1 font-sans transition-colors hover:text-zinc-200"
+            className="inline-flex items-center gap-1 font-sans text-xs transition-colors hover:text-foreground"
           >
-            <ArrowLeft className="h-3 w-3" />
-            Pull Requests
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Pull Requests</span>
           </Link>
-          <span>/</span>
-          <span>{owner}</span>
-          <span>/</span>
-          <span>{repo}</span>
-          <span>/</span>
-          <span className="font-bold text-zinc-200">#{prNumber}</span>
+          <span className="text-border">/</span>
+          <span className="truncate">{owner}</span>
+          <span className="text-border">/</span>
+          <span className="truncate">{repo}</span>
+          <span className="text-border">/</span>
+          <span className="font-bold text-foreground">#{prNumber}</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <a
             href={pullRequest.html_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#262626] bg-[#0A0A0A] px-3 py-1.5 font-sans text-xs text-zinc-400 transition-colors hover:bg-[#111111] hover:text-white"
+            className="shadow-xs inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 font-sans text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <span>Open on GitHub</span>
             <ExternalLink className="h-3.5 w-3.5" />
@@ -208,11 +211,11 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
       </div>
 
       {/* PR Header Banner */}
-      <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-6">
+      <div className="shadow-xs rounded-2xl border border-border bg-card p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-4xl space-y-3">
+          <div className="min-w-0 max-w-4xl space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-sm font-bold text-zinc-500">
+              <span className="font-mono text-sm font-bold text-muted-foreground">
                 #{pullRequest.number}
               </span>
 
@@ -233,46 +236,53 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               )}
 
               {context.contextTruncated && (
-                <Badge variant="outline" className="border-amber-900/40 text-[10px] text-amber-300">
+                <Badge
+                  variant="outline"
+                  className="border-amber-500/30 text-[10px] text-amber-700 dark:text-amber-300"
+                >
                   Large PR (Diff Budgeted)
                 </Badge>
               )}
             </div>
 
-            <h1 className="text-xl font-bold tracking-tight text-white md:text-2xl">
+            <h1 className="break-words text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               {pullRequest.title}
             </h1>
 
             {/* Author and Branch Info */}
-            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+            <div className="flex flex-wrap items-center gap-2.5 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={pullRequest.author.avatar_url || "https://github.com/ghost.png"}
                   alt={pullRequest.author.login}
-                  className="h-4 w-4 rounded-full border border-[#262626]"
+                  className="h-4 w-4 rounded-full border border-border"
                 />
-                <span className="font-medium text-zinc-200">{pullRequest.author.login}</span>
+                <span className="font-medium text-foreground">{pullRequest.author.login}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 rounded-md border border-[#1A1A1A] bg-[#111111] px-2 py-0.5 font-mono text-[11px]">
-                <GitBranch className="h-3 w-3 text-zinc-500" />
-                <span className="text-zinc-400">{pullRequest.base.ref}</span>
-                <ArrowRight className="h-3 w-3 text-zinc-600" />
-                <span className="font-medium text-zinc-200">{pullRequest.head.ref}</span>
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/60 px-2 py-0.5 font-mono text-[11px]">
+                <GitBranch className="h-3 w-3 text-muted-foreground" />
+                <span className="text-muted-foreground">{pullRequest.base.ref}</span>
+                <ArrowRight className="h-3 w-3 text-muted-foreground/60" />
+                <span className="font-medium text-foreground">{pullRequest.head.ref}</span>
               </div>
 
               <span>•</span>
-              <span className="flex items-center gap-1 text-zinc-500">
+              <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 Created {formatRelativeTime(pullRequest.created_at)}
               </span>
 
               <span>•</span>
               <div className="flex items-center gap-2 font-mono text-[11px]">
-                <span className="text-zinc-300">+{context.statistics.totalAdditions}</span>
-                <span className="text-zinc-500">-{context.statistics.totalDeletions}</span>
-                <span className="text-zinc-500">
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                  +{context.statistics.totalAdditions}
+                </span>
+                <span className="font-medium text-rose-600 dark:text-rose-400">
+                  -{context.statistics.totalDeletions}
+                </span>
+                <span className="text-muted-foreground">
                   in {context.statistics.totalChangedFiles} files
                 </span>
               </div>
@@ -287,16 +297,16 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                 disabled={analyzing}
                 variant="outline"
                 size="sm"
-                className="h-9 gap-2 border-[#262626] bg-[#0A0A0A] text-xs hover:bg-[#111111]"
+                className="shadow-xs h-9 gap-2 text-xs"
               >
                 {analyzing ? (
                   <>
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin text-zinc-300" />
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                     <span>Re-analyzing PR...</span>
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-3.5 w-3.5 text-zinc-400" />
+                    <RefreshCw className="h-3.5 w-3.5 text-muted-foreground" />
                     <span>Re-analyze PR</span>
                   </>
                 )}
@@ -305,7 +315,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               <Button
                 onClick={runAnalysis}
                 disabled={analyzing}
-                className="h-9 gap-2 bg-white px-4 text-xs font-semibold text-black shadow-sm hover:bg-zinc-200"
+                className="shadow-xs h-9 gap-2 bg-primary px-4 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
               >
                 {analyzing ? (
                   <>
@@ -325,7 +335,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
       </div>
 
       {error && (
-        <div className="border-destructive/40 bg-destructive/10 text-destructive flex items-center justify-between rounded-xl border p-4 text-xs">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive flex items-center justify-between rounded-xl border p-4 text-xs">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
@@ -338,53 +348,54 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
 
       {/* Main Tabs Navigation */}
       <Tabs defaultValue="intelligence" className="space-y-6">
-        <TabsList className="h-9 rounded-lg border border-[#262626] bg-[#0A0A0A] p-1">
-          <TabsTrigger
-            value="intelligence"
-            className="gap-2 text-xs data-[state=active]:bg-[#1A1A1A] data-[state=active]:text-white data-[state=active]:shadow-sm"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
-            Intelligence Suite
-          </TabsTrigger>
-          <TabsTrigger
-            value="files"
-            className="gap-2 text-xs data-[state=active]:bg-[#1A1A1A] data-[state=active]:text-white"
-          >
-            <FileCode className="h-3.5 w-3.5" />
-            Changed Files ({context.changedFiles.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="commits"
-            className="gap-2 text-xs data-[state=active]:bg-[#1A1A1A] data-[state=active]:text-white"
-          >
-            <GitCommit className="h-3.5 w-3.5" />
-            Commits ({context.commits.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="description"
-            className="gap-2 text-xs data-[state=active]:bg-[#1A1A1A] data-[state=active]:text-white"
-          >
-            <Terminal className="h-3.5 w-3.5" />
-            PR Description
-          </TabsTrigger>
-        </TabsList>
+        <div className="scrollbar-none overflow-x-auto pb-1">
+          <TabsList className="h-10 w-full min-w-max justify-start rounded-xl border border-border bg-muted/40 p-1">
+            <TabsTrigger
+              value="intelligence"
+              className="data-[state=active]:shadow-xs gap-2 text-xs font-medium data-[state=active]:bg-card data-[state=active]:text-foreground"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+              Intelligence Suite
+            </TabsTrigger>
+            <TabsTrigger
+              value="files"
+              className="data-[state=active]:shadow-xs gap-2 text-xs font-medium data-[state=active]:bg-card data-[state=active]:text-foreground"
+            >
+              <FileCode className="h-3.5 w-3.5 text-muted-foreground" />
+              Changed Files ({context.changedFiles.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="commits"
+              className="data-[state=active]:shadow-xs gap-2 text-xs font-medium data-[state=active]:bg-card data-[state=active]:text-foreground"
+            >
+              <GitCommit className="h-3.5 w-3.5 text-muted-foreground" />
+              Commits ({context.commits.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="description"
+              className="data-[state=active]:shadow-xs gap-2 text-xs font-medium data-[state=active]:bg-card data-[state=active]:text-foreground"
+            >
+              <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
+              PR Description
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tab 1: AI Intelligence Suite */}
         <TabsContent value="intelligence" className="space-y-6">
           {!analysis ? (
             /* Empty Intelligence State */
-            <div className="relative overflow-hidden rounded-xl border border-[#262626] bg-[#0A0A0A] p-10 text-center">
-              <BorderBeam size={220} duration={14} colorFrom="#ffffff" colorTo="#3f3f46" />
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-[#262626] bg-[#111111] text-zinc-300">
+            <div className="shadow-xs relative overflow-hidden rounded-2xl border border-border bg-card p-8 text-center sm:p-12">
+              <BorderBeam size={220} duration={14} colorFrom="#888888" colorTo="#444444" />
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
                 <Sparkles className="h-6 w-6" />
               </div>
-              <h2 className="mt-4 text-lg font-bold tracking-tight text-white">
+              <h2 className="mt-4 text-lg font-bold tracking-tight text-foreground">
                 Pull Request Intelligence Engine
               </h2>
-              <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-zinc-400">
+              <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-muted-foreground">
                 MergePilot analyzes code diffs, security boundaries, database migrations, and
-                breaking contract changes to determine the actual architectural risk before you
-                merge.
+                breaking contract changes to determine architectural risk before you merge.
               </p>
 
               <div className="mt-6 flex justify-center">
@@ -392,7 +403,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                   onClick={runAnalysis}
                   disabled={analyzing}
                   size="default"
-                  className="gap-2 bg-white font-semibold text-black hover:bg-zinc-200"
+                  className="shadow-xs gap-2 bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
                 >
                   {analyzing ? (
                     <>
@@ -408,33 +419,33 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                 </Button>
               </div>
 
-              <div className="mx-auto mt-8 grid max-w-2xl gap-4 border-t border-[#1A1A1A] pt-6 text-left sm:grid-cols-3">
+              <div className="mx-auto mt-8 grid max-w-2xl gap-4 border-t border-border pt-6 text-left sm:grid-cols-3">
                 <div className="space-y-1">
-                  <p className="flex items-center gap-1.5 text-xs font-semibold text-white">
-                    <ShieldAlert className="h-3.5 w-3.5 text-zinc-400" />
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <ShieldAlert className="h-3.5 w-3.5 text-muted-foreground" />
                     Risk Scoring
                   </p>
-                  <p className="text-[11px] leading-normal text-zinc-400">
+                  <p className="text-[11px] leading-normal text-muted-foreground">
                     Deterministic code signals blended with AI reasoning to identify high-risk
                     changes.
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="flex items-center gap-1.5 text-xs font-semibold text-white">
-                    <AlertTriangle className="h-3.5 w-3.5 text-zinc-400" />
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" />
                     Breaking Changes
                   </p>
-                  <p className="text-[11px] leading-normal text-zinc-400">
+                  <p className="text-[11px] leading-normal text-muted-foreground">
                     Detects removed API fields, altered database columns, and breaking contract
                     signatures.
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="flex items-center gap-1.5 text-xs font-semibold text-white">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" />
+                  <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
                     Test Gap Audit
                   </p>
-                  <p className="text-[11px] leading-normal text-zinc-400">
+                  <p className="text-[11px] leading-normal text-muted-foreground">
                     Flags business logic and security changes lacking accompanying test assertions.
                   </p>
                 </div>
@@ -444,41 +455,45 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
             /* Render Full Structured Intelligence */
             <div className="space-y-6">
               {/* Analyzed Timestamp Bar */}
-              <div className="flex items-center justify-between px-1 font-mono text-xs text-zinc-500">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-1 font-mono text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-zinc-400" />
-                  Analyzed {formatRelativeTime(analysis.metadata.analyzedAt)} with{" "}
-                  {analysis.metadata.model}
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>
+                    Analyzed {formatRelativeTime(analysis.metadata.analyzedAt)} with{" "}
+                    <strong className="text-foreground">{analysis.metadata.model}</strong>
+                  </span>
                 </span>
                 {analysis.metadata.contextTruncated && (
-                  <span className="text-[11px] text-amber-400">
+                  <span className="text-[11px] text-amber-600 dark:text-amber-400">
                     Context truncated: Prioritized changed files and metadata
                   </span>
                 )}
               </div>
 
               {/* 1. Summary Card */}
-              <Card className="border-[#262626] bg-[#0A0A0A]">
+              <Card className="shadow-xs border-border bg-card text-card-foreground">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-zinc-400" />
-                    <CardTitle className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    <Zap className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Engineering Digest
                     </CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs leading-relaxed text-zinc-200">{analysis.summary}</p>
+                  <p className="text-xs leading-relaxed text-foreground sm:text-sm">
+                    {analysis.summary}
+                  </p>
                 </CardContent>
               </Card>
 
               {/* 2. Risk Intelligence Card */}
-              <Card className="border-[#262626] bg-[#0A0A0A]">
+              <Card className="shadow-xs border-border bg-card text-card-foreground">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <ShieldAlert className="h-4 w-4 text-zinc-400" />
-                      <CardTitle className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                      <ShieldAlert className="h-4 w-4 text-muted-foreground" />
+                      <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Risk Intelligence
                       </CardTitle>
                     </div>
@@ -493,27 +508,27 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                 <CardContent className="space-y-5">
                   <div className="space-y-2">
                     <div className="flex justify-between font-mono text-xs">
-                      <span className="text-zinc-500">Composite Risk Score</span>
-                      <span className={`text-sm font-bold ${getRiskColor(analysis.risk.score)}`}>
+                      <span className="text-muted-foreground">Composite Risk Score</span>
+                      <span className={cn("text-sm font-bold", getRiskColor(analysis.risk.score))}>
                         {analysis.risk.score} / 100
                       </span>
                     </div>
                     <Progress
                       value={analysis.risk.score}
                       indicatorClassName={getProgressColor(analysis.risk.score)}
-                      className="h-1.5 bg-[#171717]"
+                      className="h-2 bg-muted"
                     />
                   </div>
 
                   {/* Risk Reasons */}
                   <div className="space-y-2 pt-1">
-                    <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+                    <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       Identified Risk Factors:
                     </p>
                     <ul className="space-y-2">
                       {analysis.risk.reasons.map((reason, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500" />
+                        <li key={idx} className="flex items-start gap-2.5 text-xs text-foreground">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                           <span className="leading-relaxed">{reason}</span>
                         </li>
                       ))}
@@ -525,18 +540,18 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               {/* 3. Grid for Key Changes and Breaking Changes */}
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Key Changes */}
-                <Card className="border-[#262626] bg-[#0A0A0A]">
+                <Card className="shadow-xs border-border bg-card text-card-foreground">
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                      <CheckCircle2 className="h-4 w-4 text-zinc-400" />
+                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <CheckCircle2 className="h-4 w-4" />
                       Key Modifications
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2.5">
                       {analysis.keyChanges.map((change, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-300">
-                          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-md border border-[#262626] bg-[#111111] font-mono text-[10px] font-semibold text-zinc-300">
+                        <li key={i} className="flex items-start gap-2.5 text-xs text-foreground">
+                          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-md border border-border bg-muted font-mono text-[10px] font-semibold text-foreground">
                             {i + 1}
                           </span>
                           <span className="leading-relaxed">{change}</span>
@@ -548,23 +563,28 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
 
                 {/* Breaking Changes */}
                 <Card
-                  className={`border-[#262626] bg-[#0A0A0A] ${analysis.breakingChanges.detected ? "border-rose-900/40" : ""}`}
+                  className={cn(
+                    "border-border bg-card text-card-foreground shadow-xs",
+                    analysis.breakingChanges.detected && "border-rose-500/30"
+                  )}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         <AlertTriangle
-                          className={`h-4 w-4 ${analysis.breakingChanges.detected ? "text-rose-400" : "text-zinc-500"}`}
+                          className={cn(
+                            "h-4 w-4",
+                            analysis.breakingChanges.detected
+                              ? "text-rose-600 dark:text-rose-400"
+                              : "text-muted-foreground"
+                          )}
                         />
                         Breaking Changes
                       </CardTitle>
                       {analysis.breakingChanges.detected ? (
                         <Badge variant="critical">Detected</Badge>
                       ) : (
-                        <Badge
-                          variant="outline"
-                          className="border-[#262626] text-[10px] text-zinc-400"
-                        >
+                        <Badge variant="outline" className="text-[10px]">
                           None Detected
                         </Badge>
                       )}
@@ -577,20 +597,20 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                         {analysis.breakingChanges.items.map((item, i) => (
                           <div
                             key={i}
-                            className="space-y-1 rounded-lg border border-rose-900/30 bg-rose-950/10 p-3 text-xs"
+                            className="space-y-1 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs"
                           >
-                            <span className="font-mono font-semibold text-rose-300">
+                            <span className="font-mono font-semibold text-rose-700 dark:text-rose-300">
                               {item.area}
                             </span>
-                            <p className="text-zinc-300">{item.reason}</p>
-                            <p className="text-[11px] text-zinc-400">
+                            <p className="text-foreground">{item.reason}</p>
+                            <p className="text-[11px] text-muted-foreground">
                               <strong>Impact:</strong> {item.potentialImpact}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs leading-relaxed text-zinc-400">
+                      <p className="text-xs leading-relaxed text-muted-foreground">
                         No backward compatibility breaks, removed fields, or contract alterations
                         were identified in this pull request.
                       </p>
@@ -602,20 +622,17 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               {/* 4. Test Gaps & Verification Recommendations */}
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Test Gaps */}
-                <Card className="border-[#262626] bg-[#0A0A0A]">
+                <Card className="shadow-xs border-border bg-card text-card-foreground">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                        <ShieldCheck className="h-4 w-4 text-zinc-400" />
+                      <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <ShieldCheck className="h-4 w-4" />
                         Test Gap Analysis
                       </CardTitle>
                       {analysis.testGaps.length > 0 ? (
                         <Badge variant="medium">{analysis.testGaps.length} Gaps Found</Badge>
                       ) : (
-                        <Badge
-                          variant="outline"
-                          className="border-[#262626] text-[10px] text-zinc-400"
-                        >
+                        <Badge variant="outline" className="text-[10px]">
                           Adequate Coverage
                         </Badge>
                       )}
@@ -627,18 +644,20 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                         {analysis.testGaps.map((gap, i) => (
                           <div
                             key={i}
-                            className="space-y-1 rounded-lg border border-amber-900/30 bg-amber-950/10 p-3 text-xs"
+                            className="space-y-1 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs"
                           >
-                            <p className="font-semibold text-amber-300">{gap.test}</p>
-                            <p className="text-zinc-300">{gap.reason}</p>
-                            <p className="text-[11px] text-zinc-400">
+                            <p className="font-semibold text-amber-800 dark:text-amber-300">
+                              {gap.test}
+                            </p>
+                            <p className="text-foreground">{gap.reason}</p>
+                            <p className="text-[11px] text-muted-foreground">
                               <strong>Suggested Verification:</strong> {gap.suggestedVerification}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs leading-relaxed text-zinc-400">
+                      <p className="text-xs leading-relaxed text-muted-foreground">
                         No critical test gaps were detected for the changes in this pull request.
                         Existing tests or test additions appear proportional to the risk.
                       </p>
@@ -647,18 +666,18 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                 </Card>
 
                 {/* Engineering Recommendations */}
-                <Card className="border-[#262626] bg-[#0A0A0A]">
+                <Card className="shadow-xs border-border bg-card text-card-foreground">
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                      <Terminal className="h-4 w-4 text-zinc-400" />
+                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <Terminal className="h-4 w-4" />
                       Verification Recommendations
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2.5">
                       {analysis.recommendations.map((rec, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-300">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
+                        <li key={i} className="flex items-start gap-2.5 text-xs text-foreground">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                           <span className="leading-relaxed">{rec}</span>
                         </li>
                       ))}
@@ -668,11 +687,11 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               </div>
 
               {/* 5. Release Notes Draft Card */}
-              <Card className="border-[#262626] bg-[#0A0A0A]">
+              <Card className="shadow-xs border-border bg-card text-card-foreground">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                      <FileCode className="h-4 w-4 text-zinc-400" />
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <FileCode className="h-4 w-4" />
                       Draft Release Notes
                     </CardTitle>
 
@@ -680,16 +699,16 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                       onClick={handleCopyReleaseNotes}
                       variant="outline"
                       size="sm"
-                      className="h-8 gap-1.5 border-[#262626] text-xs font-medium"
+                      className="shadow-xs h-8 gap-1.5 text-xs font-medium"
                     >
                       {copiedNotes ? (
                         <>
-                          <Check className="h-3.5 w-3.5 text-zinc-200" />
+                          <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                           <span>Copied!</span>
                         </>
                       ) : (
                         <>
-                          <Copy className="h-3.5 w-3.5 text-zinc-400" />
+                          <Copy className="h-3.5 w-3.5" />
                           <span>Copy Release Notes</span>
                         </>
                       )}
@@ -697,7 +716,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg border border-[#262626] bg-[#050505] p-4 font-mono text-xs leading-relaxed text-zinc-300">
+                  <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground shadow-inner">
                     {analysis.releaseNotes ||
                       "No release notes draft generated for this pull request."}
                   </pre>
@@ -709,7 +728,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
 
         {/* Tab 2: Changed Files */}
         <TabsContent value="files" className="space-y-4">
-          <div className="flex items-center justify-between rounded-xl border border-[#262626] bg-[#0A0A0A] p-3 font-mono text-xs text-zinc-400">
+          <div className="flex items-center justify-between rounded-xl border border-border bg-muted/40 p-3 font-mono text-xs text-muted-foreground">
             <span>
               Showing {context.changedFiles.length} changed files with +
               {context.statistics.totalAdditions} / -{context.statistics.totalDeletions} lines
@@ -723,59 +742,62 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
               return (
                 <div
                   key={file.filename}
-                  className="overflow-hidden rounded-lg border border-[#262626] bg-[#0A0A0A]"
+                  className="shadow-xs overflow-hidden rounded-xl border border-border bg-card"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFile(file.filename)}
-                    className="flex w-full items-center justify-between p-3 text-left transition-colors hover:bg-[#111111]"
+                    className="flex w-full items-center justify-between p-3.5 text-left transition-colors hover:bg-muted/60"
                   >
                     <div className="flex min-w-0 items-center gap-2.5">
                       {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 shrink-0 text-zinc-500" />
+                        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
+                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                       )}
-                      <span className="truncate font-mono text-xs font-medium text-zinc-200">
+                      <span className="truncate font-mono text-xs font-medium text-foreground">
                         {file.filename}
                       </span>
                     </div>
 
                     <div className="flex shrink-0 items-center gap-3 font-mono text-xs">
-                      <span className="text-zinc-300">+{file.additions}</span>
-                      <span className="text-zinc-500">-{file.deletions}</span>
-                      <Badge
-                        variant="outline"
-                        className="border-[#262626] font-sans text-[10px] uppercase text-zinc-400"
-                      >
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        +{file.additions}
+                      </span>
+                      <span className="font-semibold text-rose-600 dark:text-rose-400">
+                        -{file.deletions}
+                      </span>
+                      <Badge variant="outline" className="font-sans text-[10px] uppercase">
                         {file.status}
                       </Badge>
                     </div>
                   </button>
 
                   {isExpanded && (
-                    <div className="overflow-x-auto border-t border-[#1A1A1A] bg-[#050505] p-3">
+                    <div className="overflow-x-auto border-t border-border bg-muted/30 p-3">
                       {file.patch ? (
                         <pre className="font-mono text-[11px] leading-relaxed">
                           {file.patch.split("\n").map((line, lIdx) => {
-                            let lineClass = "text-zinc-400";
+                            let lineClass = "text-muted-foreground";
                             if (line.startsWith("+") && !line.startsWith("+++")) {
-                              lineClass = "text-zinc-200 bg-zinc-800/30";
+                              lineClass =
+                                "text-emerald-800 bg-emerald-500/10 dark:text-emerald-300 dark:bg-emerald-500/15";
                             } else if (line.startsWith("-") && !line.startsWith("---")) {
-                              lineClass = "text-zinc-500 bg-zinc-900/30";
+                              lineClass =
+                                "text-rose-800 bg-rose-500/10 dark:text-rose-300 dark:bg-rose-500/15";
                             } else if (line.startsWith("@@")) {
-                              lineClass = "text-zinc-500 bg-[#111111] px-1";
+                              lineClass = "text-muted-foreground bg-muted font-semibold px-1";
                             }
 
                             return (
-                              <div key={lIdx} className={`${lineClass} rounded-sm px-2 py-0.5`}>
+                              <div key={lIdx} className={cn("rounded-sm px-2 py-0.5", lineClass)}>
                                 {line}
                               </div>
                             );
                           })}
                         </pre>
                       ) : (
-                        <p className="text-xs italic text-zinc-500">
+                        <p className="text-xs italic text-muted-foreground">
                           Binary or patch diff not displayed.
                         </p>
                       )}
@@ -792,11 +814,11 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
           {context.commits.map((commit) => (
             <div
               key={commit.sha}
-              className="flex items-start justify-between gap-4 rounded-lg border border-[#262626] bg-[#0A0A0A] p-3.5 text-xs"
+              className="shadow-xs flex flex-col gap-2 rounded-xl border border-border bg-card p-3.5 text-xs sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0 space-y-1">
-                <p className="font-medium tracking-tight text-zinc-200">{commit.message}</p>
-                <div className="flex items-center gap-2 text-zinc-500">
+                <p className="font-medium tracking-tight text-foreground">{commit.message}</p>
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <span>{commit.author.name}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(commit.author.date)}</span>
@@ -808,7 +830,7 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
                   href={commit.html_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded border border-[#262626] bg-[#111111] px-2 py-0.5 text-xs text-zinc-400 transition-colors hover:text-white"
+                  className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   {commit.sha.slice(0, 7)}
                 </a>
@@ -819,19 +841,19 @@ export function PullRequestDetails({ owner, repo, prNumber }: PullRequestDetails
 
         {/* Tab 4: PR Description */}
         <TabsContent value="description">
-          <Card className="border-[#262626] bg-[#0A0A0A]">
+          <Card className="shadow-xs border-border bg-card text-card-foreground">
             <CardHeader>
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Original GitHub PR Description
               </CardTitle>
             </CardHeader>
             <CardContent>
               {context.description && context.description.trim().length > 0 ? (
-                <div className="whitespace-pre-wrap rounded-lg border border-[#262626] bg-[#050505] p-4 font-sans text-xs leading-relaxed text-zinc-300">
+                <div className="whitespace-pre-wrap rounded-xl border border-border bg-muted/30 p-4 font-sans text-xs leading-relaxed text-foreground">
                   {context.description}
                 </div>
               ) : (
-                <p className="text-xs italic text-zinc-500">
+                <p className="text-xs italic text-muted-foreground">
                   No PR description provided on GitHub.
                 </p>
               )}

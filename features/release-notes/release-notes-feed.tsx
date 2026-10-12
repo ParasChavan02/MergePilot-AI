@@ -72,10 +72,7 @@ export function ReleaseNotesFeed() {
     return (
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="space-y-3 rounded-xl border border-border bg-card p-6 dark:border-[#262626] dark:bg-[#0A0A0A]"
-          >
+          <div key={i} className="space-y-3 rounded-xl border border-border bg-card p-6">
             <Skeleton className="h-5 w-48" />
             <Skeleton className="h-6 w-96" />
             <Skeleton className="h-24 w-full" />
@@ -101,8 +98,8 @@ export function ReleaseNotesFeed() {
 
   if (notes.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-card p-12 text-center dark:border-[#262626] dark:bg-[#0A0A0A]">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:border-[#262626] dark:bg-[#111111]">
+      <div className="rounded-xl border border-border bg-card p-12 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
           <FileCode className="h-5 w-5" />
         </div>
         <h3 className="mt-4 text-base font-semibold text-foreground">
@@ -127,10 +124,7 @@ export function ReleaseNotesFeed() {
         const isCopied = copiedId === note.id;
 
         return (
-          <Card
-            key={note.id}
-            className="border-border bg-card dark:border-[#262626] dark:bg-[#0A0A0A]"
-          >
+          <Card key={note.id} className="border-border bg-card">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-1">
@@ -203,7 +197,7 @@ export function ReleaseNotesFeed() {
                 </p>
               )}
 
-              <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground/90 dark:bg-[#050505]">
+              <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg border border-border bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground/90">
                 {note.releaseNotes}
               </pre>
             </CardContent>

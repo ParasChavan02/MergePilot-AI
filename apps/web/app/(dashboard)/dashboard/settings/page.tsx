@@ -22,7 +22,7 @@ export default function SettingsPage() {
       </header>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-border bg-card dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between text-sm font-semibold text-foreground">
               <span className="flex items-center gap-2">
@@ -40,7 +40,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-card dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between text-sm font-semibold text-foreground">
               <span className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-card dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between text-sm font-semibold text-foreground">
               <span className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-card dark:border-[#262626] dark:bg-[#0A0A0A]">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between text-sm font-semibold text-foreground">
               <span className="flex items-center gap-2">
@@ -89,8 +89,8 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs leading-relaxed text-muted-foreground">
-            MergePilot is currently powered by Gemini 2.5 Flash with strict JSON schema enforcement
-            and zero-hallucination prompting constraints.
+            MergePilot is powered by Google Gemini AI with strict JSON schema enforcement and
+            zero-hallucination prompting constraints.
           </CardContent>
         </Card>
       </div>

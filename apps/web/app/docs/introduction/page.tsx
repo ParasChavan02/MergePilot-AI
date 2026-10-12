@@ -155,7 +155,7 @@ export default function IntroductionPage() {
             MergePilot connects to GitHub using secure OAuth and inspects pull requests on demand:
           </p>
 
-          <div className="rounded-xl border border-border bg-[#F5F5F5] p-5 font-mono text-xs text-foreground dark:bg-[#111111]">
+          <div className="rounded-xl border border-border bg-muted/40 p-5 font-mono text-xs text-foreground">
             <div className="flex flex-col space-y-1.5 text-center sm:text-left">
               <span>GitHub Account (OAuth Authentication)</span>
               <span className="text-muted-foreground"> ↓</span>
@@ -167,7 +167,7 @@ export default function IntroductionPage() {
               <span className="text-muted-foreground"> ↓</span>
               <span>Deterministic Signal Analysis (Patterns, Keywords, File Types)</span>
               <span className="text-muted-foreground"> ↓</span>
-              <span>Gemini 2.5 Flash Structured Inference</span>
+              <span>Gemini 3.5 Flash Structured Inference</span>
               <span className="text-muted-foreground"> ↓</span>
               <span className="font-semibold text-foreground">
                 Composite Intelligence: Summary • Risk • Test Gaps • Breaking Changes • Release

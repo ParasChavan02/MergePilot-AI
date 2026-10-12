@@ -20,7 +20,7 @@ export function ThemeToggle() {
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-zinc-400 hover:text-white"
+        className="h-8 w-8 text-muted-foreground"
         aria-label="Toggle theme"
       >
         <span className="h-4 w-4" />
@@ -35,7 +35,7 @@ export function ThemeToggle() {
       type="button"
       variant="ghost"
       size="icon"
-      className="h-8 w-8 text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+      className="h-8 w-8 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       aria-label="Toggle theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >

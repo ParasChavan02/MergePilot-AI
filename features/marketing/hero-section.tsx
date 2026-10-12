@@ -68,11 +68,11 @@ export function HeroSection() {
             Architectural Pipeline
           </p>
           <div className="backdrop-blur-xs inline-flex flex-wrap items-center justify-center gap-1.5 rounded-xl border border-border bg-card/60 p-1.5 font-mono text-xs">
-            <span className="rounded-md border border-border bg-muted/60 px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground">
+            <span className="shadow-2xs rounded-md border border-border bg-background px-2.5 py-1 font-semibold text-foreground transition-colors hover:border-foreground/30">
               Repository
             </span>
             <span className="text-[10px] text-muted-foreground/40">→</span>
-            <span className="rounded-md border border-border bg-muted/60 px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground">
+            <span className="shadow-2xs rounded-md border border-border bg-background px-2.5 py-1 font-semibold text-foreground transition-colors hover:border-foreground/30">
               Pull Request
             </span>
             <span className="text-[10px] text-muted-foreground/40">→</span>

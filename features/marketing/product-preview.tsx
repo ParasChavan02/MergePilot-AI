@@ -21,22 +21,22 @@ export function ProductPreview() {
   return (
     <div className="relative mx-auto max-w-5xl text-left">
       {/* Outer Window Container with subtle premium shadow */}
-      <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-2xl ring-1 ring-border/50 dark:border-[#262626] dark:bg-[#0A0A0A]">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-2xl ring-1 ring-border/50">
         <BorderBeam size={280} duration={16} colorFrom="#ffffff" colorTo="#3f3f46" />
 
         {/* Console / Window Title Bar */}
-        <div className="flex h-10 items-center justify-between border-b border-border bg-muted/40 px-4 dark:border-[#1A1A1A] dark:bg-[#050505]">
+        <div className="flex h-10 items-center justify-between border-b border-border bg-muted/40 px-4">
           <div className="flex items-center gap-2">
-            <div className="h-2.5 w-2.5 rounded-full bg-border dark:bg-[#262626]" />
-            <div className="h-2.5 w-2.5 rounded-full bg-border dark:bg-[#262626]" />
-            <div className="h-2.5 w-2.5 rounded-full bg-border dark:bg-[#262626]" />
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
+            <div className="h-2.5 w-2.5 rounded-full bg-border" />
             <span className="ml-2 max-w-[200px] truncate font-mono text-[11px] text-muted-foreground sm:max-w-none">
               mergepilot.ai / ParasChavan02 / MergePilot-AI / pulls / 124
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 font-mono text-[10px] text-foreground dark:border-[#262626] dark:bg-[#111111]">
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 font-mono text-[10px] text-foreground">
               <Zap className="h-2.5 w-2.5 text-muted-foreground" />
               Intelligence Active
             </span>
@@ -46,7 +46,7 @@ export function ProductPreview() {
         {/* Product Interface Body */}
         <div className="space-y-6 p-5 sm:p-6 md:p-8">
           {/* PR Header Row */}
-          <div className="flex flex-col gap-3 border-b border-border pb-5 dark:border-[#1A1A1A] md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1.5 text-left">
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="font-mono font-bold text-muted-foreground">#124</span>
@@ -91,7 +91,7 @@ export function ProductPreview() {
             {/* Left 7 cols: AI Summary, Breaking Changes & Test Gaps */}
             <div className="space-y-4 md:col-span-7">
               {/* AI Summary */}
-              <div className="space-y-2 rounded-lg border border-border bg-background p-4 dark:border-[#262626] dark:bg-[#050505]">
+              <div className="space-y-2 rounded-lg border border-border bg-background p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <Zap className="h-3.5 w-3.5 text-foreground" />
                   AI Summary
@@ -105,7 +105,7 @@ export function ProductPreview() {
 
               {/* Breaking Changes & Test Gaps Row (Stacked on Mobile, 2 cols on Desktop) */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="space-y-1 rounded-lg border border-border bg-background p-3.5 dark:border-[#262626] dark:bg-[#050505]">
+                <div className="space-y-1 rounded-lg border border-border bg-background p-3.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1.5 font-semibold text-foreground">
                       <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground" />
@@ -120,7 +120,7 @@ export function ProductPreview() {
                   </p>
                 </div>
 
-                <div className="space-y-1 rounded-lg border border-border bg-background p-3.5 dark:border-[#262626] dark:bg-[#050505]">
+                <div className="space-y-1 rounded-lg border border-border bg-background p-3.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1.5 font-semibold text-foreground">
                       <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
@@ -138,7 +138,7 @@ export function ProductPreview() {
             </div>
 
             {/* Right 5 cols: Risk Signals & Release Notes */}
-            <div className="flex flex-col justify-between space-y-3 rounded-lg border border-border bg-background p-4 dark:border-[#262626] dark:bg-[#050505] md:col-span-5">
+            <div className="flex flex-col justify-between space-y-3 rounded-lg border border-border bg-background p-4 md:col-span-5">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -178,7 +178,7 @@ export function ProductPreview() {
               </div>
 
               {/* Release Notes Draft footer snippet */}
-              <div className="border-t border-border pt-3 dark:border-[#1A1A1A]">
+              <div className="border-t border-border pt-3">
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <FileCode className="h-3.5 w-3.5 text-muted-foreground" />

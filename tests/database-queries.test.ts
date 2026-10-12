@@ -25,4 +25,19 @@ describe("Database Storage Integration", () => {
     const notes = await getUserReleaseNotesList(10);
     expect(Array.isArray(notes)).toBe(true);
   });
+
+  it("returns isolated 0 stats and empty lists for a new user", async () => {
+    const newUserId = "brand-new-user-id-99999";
+    const stats = await getDashboardStats(newUserId);
+    expect(stats.repositoriesCount).toBe(0);
+    expect(stats.openPrsCount).toBe(0);
+    expect(stats.analyzedPrsCount).toBe(0);
+    expect(stats.highRiskCount).toBe(0);
+
+    const analyses = await getUserAnalysesList(newUserId, 10);
+    expect(analyses).toEqual([]);
+
+    const releaseNotes = await getUserReleaseNotesList(newUserId, 10);
+    expect(releaseNotes).toEqual([]);
+  });
 });

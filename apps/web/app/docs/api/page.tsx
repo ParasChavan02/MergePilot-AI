@@ -254,7 +254,7 @@ export default function ApiReferencePage() {
 
           <p className="text-xs text-muted-foreground">
             Triggers analysis for the specific pull request, computes calibrated risk, executes
-            Gemini 2.5 Flash, upserts repository/PR records, and persists the analysis and release
+            Gemini 3.5 Flash, upserts repository/PR records, and persists the analysis and release
             note draft.
           </p>
         </section>

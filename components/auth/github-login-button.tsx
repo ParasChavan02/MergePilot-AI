@@ -12,7 +12,7 @@ export function GitHubLoginButton({ callbackUrl = "/dashboard" }: GitHubLoginBut
   return (
     <Button
       type="button"
-      className="h-10 w-full gap-2.5 bg-white font-semibold text-black shadow-sm hover:bg-zinc-200"
+      className="h-10 w-full gap-2.5 bg-foreground font-semibold text-background shadow-sm hover:bg-foreground/90"
       onClick={() => {
         signIn("github", {
           callbackUrl
