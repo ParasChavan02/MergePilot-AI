@@ -4,8 +4,10 @@ export const siteConfig = {
   description:
     "AI-powered pull request intelligence for teams that want faster context, lower risk, and cleaner releases.",
   links: {
-    github: "https://github.com/",
-    docs: "/#how-it-works"
+    github: "https://github.com/ParasChavan02/MergePilot-AI",
+    docs: "/#how-it-works",
+    privacy: "/privacy",
+    terms: "/terms"
   }
 } as const;
 
