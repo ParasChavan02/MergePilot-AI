@@ -12,7 +12,10 @@ export const siteConfig = {
 } as const;
 
 export function getAppUrl(path: string = "/login"): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const defaultProdUrl = "https://mergepilot-app.onrender.com";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.NODE_ENV === "production" ? defaultProdUrl : "");
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   return baseUrl ? `${baseUrl.replace(/\/$/, "")}${cleanPath}` : cleanPath;
 }

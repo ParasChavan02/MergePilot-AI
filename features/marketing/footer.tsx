@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MergePilotLogo } from "@/components/ui/mergepilot-logo";
+import { getAppUrl } from "@/config/site";
 
 export function Footer() {
   return (
@@ -59,9 +60,18 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <Link href="/docs" className="transition-colors hover:text-foreground">
-                    Documentation
-                  </Link>
+                  {getAppUrl("/docs").startsWith("http") ? (
+                    <a
+                      href={getAppUrl("/docs")}
+                      className="transition-colors hover:text-foreground"
+                    >
+                      Documentation
+                    </a>
+                  ) : (
+                    <Link href="/docs" className="transition-colors hover:text-foreground">
+                      Documentation
+                    </Link>
+                  )}
                 </li>
                 <li>
                   <a
