@@ -1,7 +1,10 @@
-import "dotenv/config";
 import path from "node:path";
 
+import dotenv from "dotenv";
 import { defineConfig } from "vitest/config";
+
+dotenv.config({ path: path.resolve(__dirname, "apps/web/.env.local") });
+dotenv.config();
 
 process.env.DATABASE_URL = process.env.DATABASE_URL || "postgres://test:test@localhost:5432/test";
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || "mock-secret-for-test-suite-minimum-32-chars";

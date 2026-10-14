@@ -80,10 +80,14 @@ export function Footer() {
               </p>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <span className="cursor-default text-muted-foreground/60">Privacy</span>
+                  <Link href="/privacy" className="transition-colors hover:text-foreground">
+                    Privacy Policy
+                  </Link>
                 </li>
                 <li>
-                  <span className="cursor-default text-muted-foreground/60">Terms</span>
+                  <Link href="/terms" className="transition-colors hover:text-foreground">
+                    Terms of Service
+                  </Link>
                 </li>
               </ul>
             </div>

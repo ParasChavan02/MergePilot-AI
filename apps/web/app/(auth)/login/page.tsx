@@ -49,7 +49,15 @@ export default async function LoginPage({ searchParams }: Readonly<LoginPageProp
           </div>
 
           <p className="text-center text-[11px] leading-relaxed text-muted-foreground/80">
-            By continuing, you agree to our future terms and privacy policy.
+            By continuing, you agree to our{" "}
+            <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+              Privacy Policy
+            </Link>
+            .
           </p>
         </div>
 
