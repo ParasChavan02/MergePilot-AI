@@ -41,6 +41,8 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+      - key: GITHUB_MARKETPLACE_WEBHOOK_SECRET
+        sync: false
 
 databases:
   # 3. PostgreSQL Database

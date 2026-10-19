@@ -6,7 +6,8 @@ const envSchema = z.object({
   GITHUB_CLIENT_ID: z.string().min(1),
   GITHUB_CLIENT_SECRET: z.string().min(1),
   GEMINI_API_KEY: z.string().optional(),
-  GEMINI_MODEL: z.string().optional()
+  GEMINI_MODEL: z.string().optional(),
+  GITHUB_MARKETPLACE_WEBHOOK_SECRET: z.string().optional()
 });
 
 export const env = envSchema.parse({
@@ -15,5 +16,6 @@ export const env = envSchema.parse({
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-  GEMINI_MODEL: process.env.GEMINI_MODEL
+  GEMINI_MODEL: process.env.GEMINI_MODEL,
+  GITHUB_MARKETPLACE_WEBHOOK_SECRET: process.env.GITHUB_MARKETPLACE_WEBHOOK_SECRET
 });

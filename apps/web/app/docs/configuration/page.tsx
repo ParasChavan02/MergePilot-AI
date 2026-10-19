@@ -131,6 +131,22 @@ export default function ConfigurationPage() {
                 <code>gemini-3.5-flash</code> for pull request intelligence inference.
               </p>
             </div>
+
+            <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-semibold text-foreground">
+                  GITHUB_MARKETPLACE_WEBHOOK_SECRET
+                </span>
+                <span className="rounded border border-border bg-muted px-2 py-0.5 font-mono text-[10px] font-medium text-foreground">
+                  Required for Marketplace
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Cryptographic secret configured in your GitHub App / GitHub Marketplace listing to
+                verify incoming webhook signatures via HMAC-SHA256 constant-time comparison on{" "}
+                <code>POST /api/webhooks/marketplace</code>.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -151,7 +167,8 @@ export default function ConfigurationPage() {
 AUTH_SECRET="your_32_character_hex_auth_secret_here"
 GITHUB_CLIENT_ID="your_github_oauth_client_id"
 GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
-GEMINI_API_KEY="your_google_gemini_api_key"`}
+GEMINI_API_KEY="your_google_gemini_api_key"
+GITHUB_MARKETPLACE_WEBHOOK_SECRET="your_github_marketplace_webhook_secret"`}
           />
         </section>
 
@@ -175,7 +192,9 @@ const envSchema = z.object({
   AUTH_SECRET: z.string().min(1),
   GITHUB_CLIENT_ID: z.string().min(1),
   GITHUB_CLIENT_SECRET: z.string().min(1),
-  GEMINI_API_KEY: z.string().optional()
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().optional(),
+  GITHUB_MARKETPLACE_WEBHOOK_SECRET: z.string().optional()
 });
 
 export const env = envSchema.parse({
@@ -183,7 +202,9 @@ export const env = envSchema.parse({
   AUTH_SECRET: process.env.AUTH_SECRET,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL,
+  GITHUB_MARKETPLACE_WEBHOOK_SECRET: process.env.GITHUB_MARKETPLACE_WEBHOOK_SECRET
 });`}
           />
 

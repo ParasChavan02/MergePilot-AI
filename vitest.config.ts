@@ -10,6 +10,9 @@ process.env.DATABASE_URL = process.env.DATABASE_URL || "postgres://test:test@loc
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || "mock-secret-for-test-suite-minimum-32-chars";
 process.env.GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "mock_github_client_id";
 process.env.GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "mock_github_client_secret";
+process.env.GITHUB_MARKETPLACE_WEBHOOK_SECRET =
+  process.env.GITHUB_MARKETPLACE_WEBHOOK_SECRET ||
+  "mock_github_marketplace_webhook_secret_for_tests";
 
 export default defineConfig({
   test: {
