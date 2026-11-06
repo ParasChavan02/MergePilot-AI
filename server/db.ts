@@ -37,8 +37,10 @@ if (!globalWithMongo._mongoClientPromise) {
   const client = new MongoClient(uri, {
     maxPoolSize: 10,
     minPoolSize: 1,
-    serverSelectionTimeoutMS: 10000,
-    connectTimeoutMS: 15000
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 20000,
+    tls: true,
+    retryWrites: true
   });
 
   globalWithMongo._mongoClientPromise = client.connect().then(async (c) => {
