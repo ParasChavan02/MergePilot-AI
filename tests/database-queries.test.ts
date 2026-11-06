@@ -1,23 +1,25 @@
-import { sql } from "drizzle-orm";
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { db } from "@/server/db";
+import { getDb } from "@/server/db";
 import {
   getDashboardStats,
   getUserAnalysesList,
   getUserReleaseNotesList
 } from "@/server/services/analysis-storage";
 
-describe("Database Storage Integration", () => {
+describe("MongoDB Database Storage Integration", () => {
   let dbAvailable = false;
 
   beforeAll(async () => {
     try {
-      await db.execute(sql`SELECT 1`);
+      const db = await getDb();
+      await db.command({ ping: 1 });
       dbAvailable = true;
     } catch {
       dbAvailable = false;
-      console.warn("PostgreSQL not reachable locally. Skipping database integration tests.");
+      console.warn(
+        "MongoDB Atlas not reachable in this test environment. Skipping live database integration tests."
+      );
     }
   });
 

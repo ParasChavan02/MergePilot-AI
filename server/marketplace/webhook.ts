@@ -1,10 +1,8 @@
 import crypto from "node:crypto";
 
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { accounts } from "@/db/schema";
-import { db } from "@/server/db";
+import { getAccountsCollection } from "@/server/db";
 
 /**
  * Constant-time verification of GitHub webhook HMAC-SHA256 signature.
@@ -257,13 +255,11 @@ export async function processMarketplaceEvent({
     // Check if the GitHub account maps to any existing registered user in our database
     let matchedUserId: string | null = null;
     try {
-      const [accountRecord] = await db
-        .select({ userId: accounts.userId })
-        .from(accounts)
-        .where(
-          and(eq(accounts.provider, "github"), eq(accounts.providerAccountId, String(account.id)))
-        )
-        .limit(1);
+      const accountsCollection = await getAccountsCollection();
+      const accountRecord = await accountsCollection.findOne({
+        provider: "github",
+        providerAccountId: String(account.id)
+      });
 
       if (accountRecord?.userId) {
         matchedUserId = accountRecord.userId;

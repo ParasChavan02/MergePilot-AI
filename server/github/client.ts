@@ -1,11 +1,9 @@
 import { Octokit } from "@octokit/rest";
-import { and, eq } from "drizzle-orm";
 
 import { GitHubConnectionError, UnauthorizedError } from "./errors";
 
-import { accounts } from "@/db/schema";
 import { auth } from "@/server/auth";
-import { db } from "@/server/db";
+import { getAccountsCollection } from "@/server/db";
 
 export async function getGitHubAccessToken(userId?: string): Promise<string> {
   let targetUserId = userId;
@@ -20,15 +18,17 @@ export async function getGitHubAccessToken(userId?: string): Promise<string> {
     sessionToken = session.accessToken;
   }
 
-  const account = await db.query.accounts.findFirst({
-    where: and(eq(accounts.userId, targetUserId), eq(accounts.provider, "github"))
+  const accountsCollection = await getAccountsCollection();
+  const account = await accountsCollection.findOne({
+    userId: targetUserId,
+    provider: "github"
   });
 
   if (account?.access_token) {
     return account.access_token;
   }
 
-  // Fallback: If not in accounts table, check active session's JWT token
+  // Fallback: If not in accounts collection, check active session's JWT token
   if (!sessionToken) {
     try {
       const session = await auth();
@@ -41,12 +41,12 @@ export async function getGitHubAccessToken(userId?: string): Promise<string> {
   }
 
   if (sessionToken) {
-    // Backfill token into accounts table so future DB lookups succeed
+    // Backfill token into accounts collection so future lookups succeed
     try {
-      await db
-        .update(accounts)
-        .set({ access_token: sessionToken })
-        .where(and(eq(accounts.userId, targetUserId), eq(accounts.provider, "github")));
+      await accountsCollection.updateOne(
+        { userId: targetUserId, provider: "github" },
+        { $set: { access_token: sessionToken } }
+      );
     } catch {
       // Ignore backfill failure
     }

@@ -14,7 +14,7 @@ const tocItems: TocItem[] = [
   { title: "Stage 3: Deterministic Signal Scanning", id: "stage-3" },
   { title: "Stage 4: Structured Gemini 3.5 Flash Inference", id: "stage-4" },
   { title: "Stage 5: Composite Risk Synthesis", id: "stage-5" },
-  { title: "Stage 6: Relational Persistence & Presentation", id: "stage-6" }
+  { title: "Stage 6: Document Persistence & Presentation", id: "stage-6" }
 ];
 
 export default function HowItWorksPage() {
@@ -49,7 +49,7 @@ export default function HowItWorksPage() {
             <pre className="leading-relaxed">
               {`GitHub Repository
        ↓
-GitHub OAuth Session (Token from Accounts Table)
+GitHub OAuth Session (Token from Accounts Collection)
        ↓
 Pull Request Metadata + Diff Fetching (Octokit REST)
        ↓
@@ -69,7 +69,7 @@ Composite Risk Synthesis (45% Deterministic + 55% AI)
        ↓
 Zod Schema Validation & Guardrails
        ↓
-PostgreSQL Persistence (Drizzle ORM)
+MongoDB Atlas Persistence (Typed Collections)
        ↓
 MergePilot Dashboard View`}
             </pre>
@@ -231,24 +231,26 @@ MergePilot Dashboard View`}
         {/* Stage 6 */}
         <section id="stage-6" className="space-y-4">
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Stage 6: Relational Persistence & Presentation
+            Stage 6: Document Persistence & Presentation
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            The synthesized analysis is persisted atomically using Drizzle ORM:
+            The synthesized analysis is persisted atomically in MongoDB Atlas:
           </p>
           <ul className="list-disc space-y-1.5 pl-4 text-xs text-muted-foreground marker:text-foreground">
             <li>
-              The repository is upserted into <code>repositories</code>.
+              The repository is upserted into the <code>repositories</code> collection.
             </li>
             <li>
-              The pull request record is upserted into <code>pull_requests</code>.
+              The pull request record is upserted into the <code>pull_requests</code> collection.
             </li>
             <li>
-              The analysis record is created in <code>analyses</code> with full JSONB metadata.
+              The analysis document is created in the <code>analyses</code> collection with full
+              metadata.
             </li>
             <li>
-              A draft entry is inserted into <code>release_notes</code> with type classification (
-              <code>breaking</code>, <code>feature</code>, <code>bugfix</code>, or <code>misc</code>
+              A draft entry is inserted into the <code>release_notes</code> collection with type
+              classification (<code>breaking</code>, <code>feature</code>, <code>bugfix</code>, or{" "}
+              <code>misc</code>
               ).
             </li>
           </ul>

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
+  MONGODB_URI: z.string().optional(),
   AUTH_SECRET: z.string().min(1),
   GITHUB_CLIENT_ID: z.string().min(1),
   GITHUB_CLIENT_SECRET: z.string().min(1),
@@ -10,8 +11,11 @@ const envSchema = z.object({
   GITHUB_MARKETPLACE_WEBHOOK_SECRET: z.string().optional()
 });
 
+const resolvedDatabaseUrl = process.env.MONGODB_URI || process.env.DATABASE_URL || "";
+
 export const env = envSchema.parse({
-  DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_URL: resolvedDatabaseUrl,
+  MONGODB_URI: process.env.MONGODB_URI || resolvedDatabaseUrl,
   AUTH_SECRET: process.env.AUTH_SECRET,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,

@@ -6,7 +6,11 @@ import { defineConfig } from "vitest/config";
 dotenv.config({ path: path.resolve(__dirname, "apps/web/.env.local") });
 dotenv.config();
 
-process.env.DATABASE_URL = process.env.DATABASE_URL || "postgres://test:test@localhost:5432/test";
+process.env.DATABASE_URL =
+  process.env.MONGODB_URI ||
+  process.env.DATABASE_URL ||
+  "mongodb+srv://paraschavan0201_db_user:8SDcMxmRzXZW9Hwx@cluster0.rb9bbij.mongodb.net/mergepilot_test?retryWrites=true&w=majority";
+process.env.MONGODB_URI = process.env.DATABASE_URL;
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || "mock-secret-for-test-suite-minimum-32-chars";
 process.env.GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "mock_github_client_id";
 process.env.GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "mock_github_client_secret";

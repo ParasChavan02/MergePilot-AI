@@ -1,9 +1,11 @@
-import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { analyses, pullRequests, repositories } from "@/db/schema";
 import { auth } from "@/server/auth";
-import { db } from "@/server/db";
+import {
+  getAnalysesCollection,
+  getPullRequestsCollection,
+  getRepositoriesCollection
+} from "@/server/db";
 import { GitHubServiceError, getPullRequestContext } from "@/server/github";
 
 export async function GET(
@@ -32,32 +34,23 @@ export async function GET(
 
     const context = await getPullRequestContext(owner, repo, prNumber, session.user.id);
 
-    // Check if an analysis already exists in the database
+    // Check if an analysis already exists in MongoDB
     let storedAnalysis = null;
     try {
-      const repoRecord = (
-        await db
-          .select()
-          .from(repositories)
-          .where(eq(repositories.fullName, `${owner}/${repo}`))
-          .limit(1)
-      )[0];
+      const repositoriesCollection = await getRepositoriesCollection();
+      const pullRequestsCollection = await getPullRequestsCollection();
+      const analysesCollection = await getAnalysesCollection();
+
+      const repoRecord = await repositoriesCollection.findOne({ fullName: `${owner}/${repo}` });
 
       if (repoRecord) {
-        const prRecord = (
-          await db
-            .select()
-            .from(pullRequests)
-            .where(
-              and(eq(pullRequests.repositoryId, repoRecord.id), eq(pullRequests.number, prNumber))
-            )
-            .limit(1)
-        )[0];
+        const prRecord = await pullRequestsCollection.findOne({
+          repositoryId: repoRecord.id,
+          number: prNumber
+        });
 
         if (prRecord) {
-          const analysisRecord = (
-            await db.select().from(analyses).where(eq(analyses.pullRequestId, prRecord.id)).limit(1)
-          )[0];
+          const analysisRecord = await analysesCollection.findOne({ pullRequestId: prRecord.id });
 
           if (analysisRecord) {
             storedAnalysis = {
@@ -78,7 +71,10 @@ export async function GET(
               recommendations: analysisRecord.recommendations ?? [],
               releaseNotes: analysisRecord.releaseNotes ?? analysisRecord.releaseNotesDraft ?? "",
               metadata: {
-                analyzedAt: analysisRecord.createdAt.toISOString(),
+                analyzedAt: (analysisRecord.createdAt instanceof Date
+                  ? analysisRecord.createdAt
+                  : new Date(analysisRecord.createdAt)
+                ).toISOString(),
                 model:
                   analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
                 contextTruncated: Boolean(

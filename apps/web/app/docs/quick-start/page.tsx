@@ -49,7 +49,7 @@ export default function QuickStartPage() {
           </ul>
 
           <DocsCallout type="note" title="Local Development">
-            If running MergePilot locally, ensure your PostgreSQL database is running and
+            If running MergePilot locally, ensure your MongoDB Atlas database is connected and
             environment variables (`DATABASE_URL`, `AUTH_SECRET`, `GITHUB_CLIENT_ID`,
             `GITHUB_CLIENT_SECRET`, and `GEMINI_API_KEY`) are set. See the{" "}
             <Link
@@ -198,7 +198,9 @@ export default function QuickStartPage() {
               Validates the AI response against Zod schemas and calculates composite calibrated
               risk.
             </li>
-            <li>Stores the resulting intelligence record and release note draft in PostgreSQL.</li>
+            <li>
+              Stores the resulting intelligence record and release note draft in MongoDB Atlas.
+            </li>
           </ol>
         </section>
 

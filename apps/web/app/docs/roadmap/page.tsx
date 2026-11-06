@@ -58,7 +58,7 @@ export default function RoadmapPage() {
                 GitHub OAuth & Octokit Integration
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
-                Sign in with GitHub, secure access token persistence in PostgreSQL, and
+                Sign in with GitHub, secure access token persistence in MongoDB Atlas, and
                 repository/PR synchronization.
               </p>
             </div>

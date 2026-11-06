@@ -63,13 +63,13 @@ export default function ConfigurationPage() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                PostgreSQL database connection URI used by Drizzle ORM. Must support standard SSL
-                connection strings (e.g. Neon, Supabase, Render PostgreSQL, or local Postgres).
+                MongoDB Atlas database connection URI used by the native MongoDB driver and Auth.js
+                MongoDB adapter. Must support standard replica set / SRV connection strings.
               </p>
               <div className="font-mono text-[11px] text-muted-foreground">
                 Example:{" "}
                 <code>
-                  postgresql://user:password@ep-sample-pooler.us-east-1.aws.neon.tech/mergepilot?sslmode=require
+                  mongodb+srv://username:password@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority
                 </code>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function ConfigurationPage() {
           <DocsCodeBlock
             language="bash"
             filename=".env.local"
-            code={`DATABASE_URL="postgresql://user:password@localhost:5432/mergepilot"
+            code={`DATABASE_URL="mongodb+srv://username:password@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority"
 AUTH_SECRET="your_32_character_hex_auth_secret_here"
 GITHUB_CLIENT_ID="your_github_oauth_client_id"
 GITHUB_CLIENT_SECRET="your_github_oauth_client_secret"
