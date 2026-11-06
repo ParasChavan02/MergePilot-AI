@@ -291,8 +291,8 @@ export function TermsContent() {
             to Gemini is subject to Google&apos;s Generative AI terms.
           </li>
           <li>
-            <strong>Render Services, Inc.:</strong> Provides server runtime hosting and PostgreSQL
-            managed database infrastructure.
+            <strong>Render Services, Inc.:</strong> Provides server runtime hosting and cloud
+            infrastructure.
           </li>
         </ul>
         <p className="text-xs leading-relaxed text-muted-foreground">

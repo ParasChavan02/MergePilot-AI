@@ -1,28 +1,12 @@
-import { auth } from "@/server/auth";
+import { middlewareAuth } from "@/server/auth-edge";
 
-export default auth((req) => {
-  console.log(
-    "MIDDLEWARE:",
-    req.nextUrl.pathname,
-    "AUTH:",
-    !!req.auth?.user,
-    "USER:",
-    req.auth?.user?.name
-  );
-
-  const isDashboardRoute =
-    req.nextUrl.pathname.startsWith("/dashboard");
-
+export default middlewareAuth((req) => {
+  const isDashboardRoute = req.nextUrl.pathname.startsWith("/dashboard");
   const isAuthenticated = !!req.auth?.user;
 
   if (isDashboardRoute && !isAuthenticated) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
-
-    loginUrl.searchParams.set(
-      "callbackUrl",
-      req.nextUrl.pathname
-    );
-
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return Response.redirect(loginUrl);
   }
 

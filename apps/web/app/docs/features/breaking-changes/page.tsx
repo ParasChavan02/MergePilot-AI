@@ -166,7 +166,7 @@ export const breakingChangesSchema = z.object({
               </div>
               <p className="text-xs text-muted-foreground">
                 <strong className="text-foreground">Area:</strong> Database Schema (
-                <code>db/schema.ts</code>)<br />
+                <code>db/models.ts</code>)<br />
                 <strong className="text-foreground">Reason:</strong> Added optional column{" "}
                 <code>description: text(&quot;description&quot;)</code> with default{" "}
                 <code>null</code>.<br />

@@ -1,8 +1,12 @@
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import crypto from "node:crypto";
 
-import { analyses, pullRequests, releaseNotes, repositories } from "@/db/schema";
 import type { FinalAnalysisResult } from "@/server/ai/schemas";
-import { db } from "@/server/db";
+import {
+  getAnalysesCollection,
+  getPullRequestsCollection,
+  getReleaseNotesCollection,
+  getRepositoriesCollection
+} from "@/server/db";
 import type { GitHubPullRequest, GitHubRepository } from "@/server/github/types";
 
 interface PersistAnalysisOptions {
@@ -18,139 +22,131 @@ export async function persistAnalysis({
   pullRequest,
   analysis
 }: PersistAnalysisOptions) {
-  // 1. Ensure repository exists in DB
-  let repoRecord = (
-    await db
-      .select()
-      .from(repositories)
-      .where(eq(repositories.fullName, repository.full_name))
-      .limit(1)
-  )[0];
+  const repositoriesCollection = await getRepositoriesCollection();
+  const pullRequestsCollection = await getPullRequestsCollection();
+  const analysesCollection = await getAnalysesCollection();
+  const releaseNotesCollection = await getReleaseNotesCollection();
+
+  const now = new Date();
+
+  // 1. Ensure repository exists in MongoDB
+  let repoRecord = await repositoriesCollection.findOne({ fullName: repository.full_name });
 
   if (!repoRecord) {
-    const [newRepo] = await db
-      .insert(repositories)
-      .values({
-        ownerId: userId,
-        githubId: repository.id,
-        name: repository.name,
-        fullName: repository.full_name,
-        defaultBranch: repository.default_branch,
-        private: repository.private,
-        description: repository.description,
-        htmlUrl: repository.html_url
-      })
-      .returning();
-    repoRecord = newRepo;
+    const newRepoId = crypto.randomUUID();
+    const doc = {
+      id: newRepoId,
+      ownerId: userId,
+      githubId: repository.id,
+      name: repository.name,
+      fullName: repository.full_name,
+      defaultBranch: repository.default_branch,
+      private: repository.private,
+      description: repository.description,
+      htmlUrl: repository.html_url,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now
+    };
+    const insertResult = await repositoriesCollection.insertOne(doc);
+    repoRecord = { ...doc, _id: insertResult.insertedId };
   }
 
-  if (!repoRecord) {
-    throw new Error("Failed to ensure repository record in database");
-  }
-
-  // 2. Ensure pull request exists in DB
-  let prRecord = (
-    await db
-      .select()
-      .from(pullRequests)
-      .where(
-        and(
-          eq(pullRequests.repositoryId, repoRecord.id),
-          eq(pullRequests.number, pullRequest.number)
-        )
-      )
-      .limit(1)
-  )[0];
+  // 2. Ensure pull request exists in MongoDB
+  let prRecord = await pullRequestsCollection.findOne({
+    repositoryId: repoRecord.id,
+    number: pullRequest.number
+  });
 
   if (!prRecord) {
-    const [newPr] = await db
-      .insert(pullRequests)
-      .values({
-        repositoryId: repoRecord.id,
-        githubId: pullRequest.id,
-        number: pullRequest.number,
-        title: pullRequest.title,
-        body: pullRequest.body,
-        authorLogin: pullRequest.author.login,
-        state: pullRequest.state,
-        isDraft: pullRequest.draft,
-        headSha: pullRequest.head.sha,
-        baseSha: pullRequest.base.sha,
-        headRef: pullRequest.head.ref,
-        baseRef: pullRequest.base.ref,
-        mergedAt: pullRequest.merged_at ? new Date(pullRequest.merged_at) : null,
-        closedAt: pullRequest.closed_at ? new Date(pullRequest.closed_at) : null
-      })
-      .returning();
-    prRecord = newPr;
+    const newPrId = crypto.randomUUID();
+    const doc = {
+      id: newPrId,
+      repositoryId: repoRecord.id,
+      githubId: pullRequest.id,
+      number: pullRequest.number,
+      title: pullRequest.title,
+      body: pullRequest.body,
+      authorLogin: pullRequest.author.login,
+      state: pullRequest.state,
+      isDraft: pullRequest.draft,
+      headSha: pullRequest.head.sha,
+      baseSha: pullRequest.base.sha,
+      headRef: pullRequest.head.ref,
+      baseRef: pullRequest.base.ref,
+      mergedAt: pullRequest.merged_at ? new Date(pullRequest.merged_at) : null,
+      closedAt: pullRequest.closed_at ? new Date(pullRequest.closed_at) : null,
+      createdAt: now,
+      updatedAt: now
+    };
+    const insertResult = await pullRequestsCollection.insertOne(doc);
+    prRecord = { ...doc, _id: insertResult.insertedId };
   } else {
-    // Update existing PR record with latest metadata
-    const [updatedPr] = await db
-      .update(pullRequests)
-      .set({
-        title: pullRequest.title,
-        body: pullRequest.body,
-        state: pullRequest.state,
-        headSha: pullRequest.head.sha,
-        mergedAt: pullRequest.merged_at ? new Date(pullRequest.merged_at) : null,
-        closedAt: pullRequest.closed_at ? new Date(pullRequest.closed_at) : null,
-        updatedAt: new Date()
-      })
-      .where(eq(pullRequests.id, prRecord.id))
-      .returning();
-    prRecord = updatedPr;
-  }
-
-  if (!prRecord) {
-    throw new Error("Failed to ensure pull request record in database");
+    await pullRequestsCollection.updateOne(
+      { id: prRecord.id },
+      {
+        $set: {
+          title: pullRequest.title,
+          body: pullRequest.body,
+          state: pullRequest.state,
+          headSha: pullRequest.head.sha,
+          mergedAt: pullRequest.merged_at ? new Date(pullRequest.merged_at) : null,
+          closedAt: pullRequest.closed_at ? new Date(pullRequest.closed_at) : null,
+          updatedAt: now
+        }
+      }
+    );
   }
 
   // 3. Save analysis record
-  const [analysisRecord] = await db
-    .insert(analyses)
-    .values({
-      pullRequestId: prRecord.id,
-      userId,
-      repositoryId: repoRecord.id,
-      status: "complete",
-      summary: analysis.summary,
-      riskLevel: analysis.risk.level,
-      riskScore: analysis.risk.score,
-      breakingChangeDetected: analysis.breakingChanges.detected,
-      keyChanges: analysis.keyChanges,
-      breakingChanges: analysis.breakingChanges,
-      testGaps: analysis.testGaps,
-      recommendations: analysis.recommendations,
-      releaseNotes: analysis.releaseNotes,
-      releaseNotesDraft: analysis.releaseNotes,
-      modelVersion: analysis.metadata.model,
-      metadata: {
-        riskReasons: analysis.risk.reasons,
-        deterministicSignals: analysis.metadata.deterministicRiskSignals,
-        contextTruncated: analysis.metadata.contextTruncated
-      }
-    })
-    .returning();
+  const newAnalysisId = crypto.randomUUID();
+  const analysisDoc = {
+    id: newAnalysisId,
+    pullRequestId: prRecord.id,
+    userId,
+    repositoryId: repoRecord.id,
+    status: "complete" as const,
+    summary: analysis.summary,
+    riskLevel: analysis.risk.level,
+    riskScore: analysis.risk.score,
+    breakingChangeDetected: analysis.breakingChanges.detected,
+    keyChanges: analysis.keyChanges,
+    breakingChanges: analysis.breakingChanges,
+    testGaps: analysis.testGaps,
+    recommendations: analysis.recommendations,
+    releaseNotes: analysis.releaseNotes,
+    testSuggestions: [],
+    releaseNotesDraft: analysis.releaseNotes,
+    modelVersion: analysis.metadata.model,
+    metadata: {
+      riskReasons: analysis.risk.reasons,
+      deterministicSignals: analysis.metadata.deterministicRiskSignals,
+      contextTruncated: analysis.metadata.contextTruncated
+    },
+    createdAt: now,
+    updatedAt: now
+  };
 
-  if (!analysisRecord) {
-    throw new Error("Failed to insert analysis record");
-  }
+  await analysesCollection.insertOne(analysisDoc);
 
   // 4. Save release note draft if generated
   if (analysis.releaseNotes && analysis.releaseNotes.trim().length > 0) {
-    await db.insert(releaseNotes).values({
-      analysisId: analysisRecord.id,
+    const newReleaseNoteId = crypto.randomUUID();
+    await releaseNotesCollection.insertOne({
+      id: newReleaseNoteId,
+      analysisId: newAnalysisId,
       repositoryId: repoRecord.id,
       title: `${repository.full_name} #${pullRequest.number}: ${pullRequest.title}`,
       body: analysis.releaseNotes,
       type: analysis.breakingChanges.detected ? "breaking" : "feature",
-      isPublished: false
+      isPublished: false,
+      createdAt: now
     });
   }
 
   return {
-    id: analysisRecord.id,
-    summary: analysisRecord.summary,
+    id: newAnalysisId,
+    summary: analysisDoc.summary,
     risk: analysis.risk,
     keyChanges: analysis.keyChanges,
     breakingChanges: analysis.breakingChanges,
@@ -158,42 +154,32 @@ export async function persistAnalysis({
     recommendations: analysis.recommendations,
     releaseNotes: analysis.releaseNotes,
     metadata: {
-      analyzedAt: analysisRecord.createdAt.toISOString(),
-      model: analysisRecord.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
+      analyzedAt: now.toISOString(),
+      model: analysisDoc.modelVersion ?? (process.env.GEMINI_MODEL || "gemini-3.5-flash"),
       contextTruncated: analysis.metadata.contextTruncated
     }
   };
 }
 
 export async function getStoredAnalysisForPR(owner: string, repo: string, prNumber: number) {
-  const repoRecord = (
-    await db
-      .select()
-      .from(repositories)
-      .where(eq(repositories.fullName, `${owner}/${repo}`))
-      .limit(1)
-  )[0];
+  const repositoriesCollection = await getRepositoriesCollection();
+  const pullRequestsCollection = await getPullRequestsCollection();
+  const analysesCollection = await getAnalysesCollection();
 
+  const repoRecord = await repositoriesCollection.findOne({ fullName: `${owner}/${repo}` });
   if (!repoRecord) return null;
 
-  const prRecord = (
-    await db
-      .select()
-      .from(pullRequests)
-      .where(and(eq(pullRequests.repositoryId, repoRecord.id), eq(pullRequests.number, prNumber)))
-      .limit(1)
-  )[0];
-
+  const prRecord = await pullRequestsCollection.findOne({
+    repositoryId: repoRecord.id,
+    number: prNumber
+  });
   if (!prRecord) return null;
 
-  const analysisRecord = (
-    await db
-      .select()
-      .from(analyses)
-      .where(eq(analyses.pullRequestId, prRecord.id))
-      .orderBy(desc(analyses.createdAt))
-      .limit(1)
-  )[0];
+  const analysisRecord = await analysesCollection
+    .find({ pullRequestId: prRecord.id })
+    .sort({ createdAt: -1 })
+    .limit(1)
+    .next();
 
   if (!analysisRecord) return null;
 
@@ -239,42 +225,64 @@ export async function getUserAnalysesList(userIdOrLimit?: string | number, optio
     limit = optionalLimit;
   }
 
-  const query = db
-    .select({
-      analysis: analyses,
-      pullRequest: pullRequests,
-      repository: repositories
-    })
-    .from(analyses)
-    .innerJoin(pullRequests, eq(analyses.pullRequestId, pullRequests.id))
-    .innerJoin(repositories, eq(pullRequests.repositoryId, repositories.id));
+  const analysesCollection = await getAnalysesCollection();
 
-  const recentAnalyses = userId
-    ? await query.where(eq(analyses.userId, userId)).orderBy(desc(analyses.createdAt)).limit(limit)
-    : await query.orderBy(desc(analyses.createdAt)).limit(limit);
+  const pipeline: any[] = [];
 
-  return recentAnalyses.map(({ analysis, pullRequest, repository }) => ({
-    id: analysis.id,
+  if (userId) {
+    pipeline.push({ $match: { userId } });
+  }
+
+  pipeline.push(
+    { $sort: { createdAt: -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "pull_requests",
+        localField: "pullRequestId",
+        foreignField: "id",
+        as: "pullRequest"
+      }
+    },
+    { $unwind: "$pullRequest" },
+    {
+      $lookup: {
+        from: "repositories",
+        localField: "repositoryId",
+        foreignField: "id",
+        as: "repository"
+      }
+    },
+    { $unwind: "$repository" }
+  );
+
+  const results = await analysesCollection.aggregate(pipeline).toArray();
+
+  return results.map((item: any) => ({
+    id: item.id,
     repository: {
-      fullName: repository.fullName,
-      name: repository.name
+      fullName: item.repository.fullName,
+      name: item.repository.name
     },
     pullRequest: {
-      number: pullRequest.number,
-      title: pullRequest.title,
-      state: pullRequest.state,
-      authorLogin: pullRequest.authorLogin
+      number: item.pullRequest.number,
+      title: item.pullRequest.title,
+      state: item.pullRequest.state,
+      authorLogin: item.pullRequest.authorLogin
     },
     risk: {
-      level: (analysis.riskLevel as "low" | "medium" | "high" | "critical") || "low",
-      score: analysis.riskScore,
-      reasons: (analysis.metadata as { riskReasons?: string[] })?.riskReasons ?? []
+      level: (item.riskLevel as "low" | "medium" | "high" | "critical") || "low",
+      score: item.riskScore,
+      reasons: (item.metadata as { riskReasons?: string[] })?.riskReasons ?? []
     },
-    summary: analysis.summary ?? "",
+    summary: item.summary ?? "",
     breakingChangesCount:
-      analysis.breakingChanges?.items?.length ?? (analysis.breakingChangeDetected ? 1 : 0),
-    testGapsCount: analysis.testGaps?.length ?? 0,
-    analyzedAt: analysis.createdAt.toISOString()
+      item.breakingChanges?.items?.length ?? (item.breakingChangeDetected ? 1 : 0),
+    testGapsCount: item.testGaps?.length ?? 0,
+    analyzedAt: (item.createdAt instanceof Date
+      ? item.createdAt
+      : new Date(item.createdAt)
+    ).toISOString()
   }));
 }
 
@@ -289,99 +297,127 @@ export async function getUserReleaseNotesList(userIdOrLimit?: string | number, o
     limit = optionalLimit;
   }
 
-  const query = db
-    .select({
-      releaseNote: releaseNotes,
-      repository: repositories,
-      analysis: analyses,
-      pullRequest: pullRequests
-    })
-    .from(releaseNotes)
-    .innerJoin(repositories, eq(releaseNotes.repositoryId, repositories.id))
-    .innerJoin(analyses, eq(releaseNotes.analysisId, analyses.id))
-    .innerJoin(pullRequests, eq(analyses.pullRequestId, pullRequests.id));
+  const releaseNotesCollection = await getReleaseNotesCollection();
 
-  const notes = userId
-    ? await query
-        .where(eq(analyses.userId, userId))
-        .orderBy(desc(releaseNotes.createdAt))
-        .limit(limit)
-    : await query.orderBy(desc(releaseNotes.createdAt)).limit(limit);
+  const pipeline: any[] = [
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: "analyses",
+        localField: "analysisId",
+        foreignField: "id",
+        as: "analysis"
+      }
+    },
+    { $unwind: "$analysis" }
+  ];
 
-  return notes.map(({ releaseNote, repository, pullRequest, analysis }) => ({
-    id: releaseNote.id,
-    repositoryName: repository.fullName,
-    prNumber: pullRequest.number,
-    prTitle: pullRequest.title,
-    summary: analysis.summary ?? "",
-    releaseNotes: releaseNote.body,
-    type: releaseNote.type,
-    createdAt: releaseNote.createdAt.toISOString()
+  if (userId) {
+    pipeline.push({ $match: { "analysis.userId": userId } });
+  }
+
+  pipeline.push(
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "repositories",
+        localField: "repositoryId",
+        foreignField: "id",
+        as: "repository"
+      }
+    },
+    { $unwind: "$repository" },
+    {
+      $lookup: {
+        from: "pull_requests",
+        localField: "analysis.pullRequestId",
+        foreignField: "id",
+        as: "pullRequest"
+      }
+    },
+    { $unwind: "$pullRequest" }
+  );
+
+  const results = await releaseNotesCollection.aggregate(pipeline).toArray();
+
+  return results.map((item: any) => ({
+    id: item.id,
+    repositoryName: item.repository.fullName,
+    prNumber: item.pullRequest.number,
+    prTitle: item.pullRequest.title,
+    summary: item.analysis.summary ?? "",
+    releaseNotes: item.body,
+    type: item.type,
+    createdAt: (item.createdAt instanceof Date
+      ? item.createdAt
+      : new Date(item.createdAt)
+    ).toISOString()
   }));
 }
 
 export async function getDashboardStats(userId?: string) {
+  const repositoriesCollection = await getRepositoriesCollection();
+  const pullRequestsCollection = await getPullRequestsCollection();
+  const analysesCollection = await getAnalysesCollection();
+
   if (userId) {
-    const userRepos = await db
-      .select({ id: repositories.id })
-      .from(repositories)
-      .where(eq(repositories.ownerId, userId));
+    const userRepos = await repositoriesCollection.find({ ownerId: userId }).toArray();
     const userRepoIds = userRepos.map((r) => r.id);
 
-    const [analyzedReposResult] = await db
-      .select({ count: sql<number>`count(distinct ${analyses.repositoryId})::int` })
-      .from(analyses)
-      .where(eq(analyses.userId, userId));
+    // Count distinct repositories analyzed by this user
+    const analyzedRepoIds = await analysesCollection.distinct("repositoryId", { userId });
+    const repositoriesCount = Math.max(userRepoIds.length, analyzedRepoIds.length);
 
-    const repositoriesCount = Math.max(userRepoIds.length, analyzedReposResult?.count ?? 0);
+    // Count open PRs analyzed by this user
+    const openPrsPipeline = [
+      { $match: { userId } },
+      {
+        $lookup: {
+          from: "pull_requests",
+          localField: "pullRequestId",
+          foreignField: "id",
+          as: "pr"
+        }
+      },
+      { $unwind: "$pr" },
+      { $match: { "pr.state": "open" } },
+      { $group: { _id: "$pullRequestId" } },
+      { $count: "count" }
+    ];
+    const openPrsResult = await analysesCollection.aggregate(openPrsPipeline).toArray();
+    const openPrsCount = openPrsResult[0]?.count ?? 0;
 
-    const [openPrsResult] = await db
-      .select({ count: sql<number>`count(distinct ${pullRequests.id})::int` })
-      .from(pullRequests)
-      .innerJoin(analyses, eq(pullRequests.id, analyses.pullRequestId))
-      .where(and(eq(analyses.userId, userId), eq(pullRequests.state, "open")));
+    // Count distinct PRs analyzed by this user
+    const distinctAnalyzedPrs = await analysesCollection.distinct("pullRequestId", { userId });
+    const analyzedPrsCount = distinctAnalyzedPrs.length;
 
-    const [analyzedPrsResult] = await db
-      .select({ count: sql<number>`count(distinct ${analyses.pullRequestId})::int` })
-      .from(analyses)
-      .where(eq(analyses.userId, userId));
-
-    const [highRiskResult] = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(analyses)
-      .where(and(eq(analyses.userId, userId), inArray(analyses.riskLevel, ["high", "critical"])));
+    // Count high and critical risk analyses
+    const highRiskCount = await analysesCollection.countDocuments({
+      userId,
+      riskLevel: { $in: ["high", "critical"] }
+    });
 
     return {
       repositoriesCount,
-      openPrsCount: openPrsResult?.count ?? 0,
-      analyzedPrsCount: analyzedPrsResult?.count ?? 0,
-      highRiskCount: highRiskResult?.count ?? 0
+      openPrsCount,
+      analyzedPrsCount,
+      highRiskCount
     };
   }
 
-  // Fallback for global stats / tests
-  const [totalReposResult] = await db
-    .select({ count: sql<number>`count(distinct ${repositories.id})::int` })
-    .from(repositories);
-
-  const [openPrsResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(pullRequests)
-    .where(eq(pullRequests.state, "open"));
-
-  const [analyzedPrsResult] = await db
-    .select({ count: sql<number>`count(distinct ${analyses.pullRequestId})::int` })
-    .from(analyses);
-
-  const [highRiskResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(analyses)
-    .where(inArray(analyses.riskLevel, ["high", "critical"]));
+  // Global fallback (when no specific user ID is passed, e.g. tests)
+  const repositoriesCount = await repositoriesCollection.countDocuments();
+  const openPrsCount = await pullRequestsCollection.countDocuments({ state: "open" });
+  const distinctAnalyzedPrs = await analysesCollection.distinct("pullRequestId");
+  const analyzedPrsCount = distinctAnalyzedPrs.length;
+  const highRiskCount = await analysesCollection.countDocuments({
+    riskLevel: { $in: ["high", "critical"] }
+  });
 
   return {
-    repositoriesCount: totalReposResult?.count ?? 0,
-    openPrsCount: openPrsResult?.count ?? 0,
-    analyzedPrsCount: analyzedPrsResult?.count ?? 0,
-    highRiskCount: highRiskResult?.count ?? 0
+    repositoriesCount,
+    openPrsCount,
+    analyzedPrsCount,
+    highRiskCount
   };
 }

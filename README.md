@@ -51,7 +51,7 @@ MergePilot AI acts as an autonomous staff-level engineer embedded in your review
 - **Test Gap Audit**: Detects modified business logic or security paths lacking corresponding automated tests and provides concrete verification steps.
 - **Actionable Verification Recommendations**: Clear, prioritized recommendations for staging validation, rollbacks, and edge-case testing.
 - **One-Click Release Notes**: Auto-generated markdown changelogs with one-click clipboard copying.
-- **Intelligent Analysis Caching**: Analyses are persisted in PostgreSQL; reopening an analyzed PR loads instantly without redundant AI API calls. Explicit re-analysis triggers fresh evaluation on demand.
+- **Intelligent Analysis Caching**: Analyses are persisted in MongoDB Atlas; reopening an analyzed PR loads instantly without redundant AI API calls. Explicit re-analysis triggers fresh evaluation on demand.
 - **Live Intelligence Dashboard**: Real-time metrics tracking connected repositories, open PRs, total analyses performed, and high-risk flags.
 
 ---
@@ -79,10 +79,10 @@ Next.js Server Layer (Node.js Runtime)
      │        │        ▼
      │        │   Zod Schema Validation & Risk Synthesis
      │        │
-     │        └── Database Access Layer (Drizzle ORM)
+     │        └── Database Access Layer (Native MongoDB Driver)
      │                 │
      │                 ▼
-     └─────────► PostgreSQL Database
+     └─────────► MongoDB Atlas Cluster
 ```
 
 ---
@@ -93,7 +93,7 @@ Next.js Server Layer (Node.js Runtime)
 - **Language**: TypeScript (Strict mode with `exactOptionalPropertyTypes`)
 - **UI & Styling**: Tailwind CSS, shadcn/ui primitives, Magic UI components (`NumberTicker`, `SpotlightCard`, `BorderBeam`, `GridPattern`)
 - **Authentication**: Auth.js / NextAuth v5 with GitHub OAuth provider
-- **Database & ORM**: PostgreSQL with Drizzle ORM
+- **Database & Driver**: MongoDB Atlas with official native `mongodb` driver
 - **AI Engine**: Google Gemini API (`@google/genai`) with Gemini 3.5 Flash
 - **GitHub Integration**: `@octokit/rest` with server-side token retrieval
 - **Validation**: Zod schema parsing across all external API and AI boundaries
@@ -131,20 +131,18 @@ mergepilot-ai/
 │   └── ui/                          # Badge, button, card, input, progress, tabs
 ├── config/                          # Environment, navigation, and site metadata
 ├── db/
-│   └── schema.ts                    # Drizzle PostgreSQL schema definitions
-├── drizzle/                         # Auto-generated SQL migrations
+│   └── models.ts                    # MongoDB document models & interfaces
 ├── features/                        # Domain UI features (repositories, pulls, etc.)
 ├── lib/                             # Shared utility functions and prompt builders
 ├── server/
 │   ├── ai/                          # Gemini client, prompts, schemas, orchestrator
-│   ├── auth.ts                      # Auth.js configuration & Drizzle adapter
-│   ├── db.ts                        # PostgreSQL database client connection
+│   ├── auth.ts                      # Auth.js configuration & MongoDB adapter
+│   ├── db.ts                        # MongoDB Atlas client connection pool
 │   ├── github/                      # Modular GitHub client, repos, PRs, error handling
 │   ├── risk/                        # Deterministic risk engine & synthesis
 │   └── services/                    # Database persistence & caching services
 ├── tests/                           # Unit tests (Risk engine, Normalization, Schemas)
-├── vitest.config.ts                 # Vitest test configuration
-└── drizzle.config.ts                # Drizzle kit configuration
+└── vitest.config.ts                 # Vitest test configuration
 ```
 
 ---
@@ -155,7 +153,8 @@ Create a `.env` file in the project root:
 
 ```env
 # Database
-DATABASE_URL="postgres://username:password@hostname:5432/database_name?sslmode=require"
+DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority"
+MONGODB_URI="mongodb+srv://<username>:<password>@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority"
 
 # NextAuth / Auth.js
 AUTH_SECRET="your-32-character-secret-generated-via-openssl-rand-hex-32"
@@ -189,24 +188,15 @@ GEMINI_API_KEY="your_google_gemini_api_key"
 
 ---
 
-## 10. PostgreSQL & Drizzle Setup
+## 10. MongoDB Atlas Setup
 
-MergePilot AI uses PostgreSQL (compatible with Neon, Supabase, Render PostgreSQL, AWS RDS) paired with Drizzle ORM.
+MergePilot AI uses MongoDB Atlas paired with the official native `mongodb` driver and `@auth/mongodb-adapter`.
 
-### Generate & Apply Migrations
+### Initialize Collection Indexes
 
 ```bash
-# Generate SQL migration files from schema
-pnpm db:generate
-
-# Push schema directly to database
-pnpm db:push
-
-# Or execute migrations
-pnpm db:migrate
-
-# Open visual Drizzle Studio database viewer
-pnpm db:studio
+# Ensure all collections and unique indexes are created
+pnpm db:init
 ```
 
 ---

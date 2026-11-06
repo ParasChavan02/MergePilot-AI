@@ -86,7 +86,7 @@ MergePilot AI processes arbitrary code diffs submitted by users or pulled from G
 ### 4. Input Validation & Schema Enforcement
 
 - All incoming requests to route handlers under `app/api/` must validate query parameters and JSON payloads using **Zod** schemas.
-- Model responses from Gemini must be parsed and validated against deterministic Zod schemas before being persisted to PostgreSQL or returned to the client.
+- Model responses from Gemini must be parsed and validated against deterministic Zod schemas before being persisted to MongoDB Atlas or returned to the client.
 
 ### 5. Secrets Management
 

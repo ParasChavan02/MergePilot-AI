@@ -83,8 +83,8 @@ export function PrivacyContent() {
               architectural summaries, and release notes.
             </li>
             <li>
-              Analysis reports and authentication tokens are saved in our PostgreSQL database hosted
-              on Render so you can view your analysis history.
+              Analysis reports and authentication tokens are saved in our MongoDB Atlas database
+              cluster so you can view your analysis history.
             </li>
             <li>
               You can revoke access at any time through GitHub, and you can contact us to request
@@ -133,8 +133,10 @@ export function PrivacyContent() {
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
               To query the GitHub REST API on your behalf without requiring you to re-login on every
               request, we store the OAuth access token, token type, authorized scopes, and token
-              expiration timestamps in our PostgreSQL{" "}
-              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">accounts</code>{" "}
+              expiration timestamps in our MongoDB
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
+                accounts
+              </code>{" "}
               table.
             </p>
           </div>
@@ -164,7 +166,7 @@ export function PrivacyContent() {
             </h3>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
               When analysis runs, MergePilot AI generates and stores structured engineering
-              artifacts in our PostgreSQL database:
+              artifacts in our MongoDB database:
             </p>
             <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-muted-foreground">
               <li>Executive summaries of changes and key modification points</li>
@@ -490,7 +492,7 @@ export function PrivacyContent() {
               <tr>
                 <td className="px-4 py-3 font-semibold text-foreground">Render Services, Inc.</td>
                 <td className="px-4 py-3 text-muted-foreground">
-                  Application hosting and managed PostgreSQL database
+                  Application hosting and server runtime
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   Database records, server access logs, application runtime
@@ -520,8 +522,7 @@ export function PrivacyContent() {
           </h2>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          All persisted application data is stored in a managed PostgreSQL database instance hosted
-          on Render.
+          All persisted application data is stored in a managed MongoDB Atlas database cluster.
         </p>
         <div className="space-y-2 text-xs leading-relaxed text-muted-foreground">
           <p>
@@ -556,7 +557,7 @@ export function PrivacyContent() {
         <ul className="list-inside list-disc space-y-1.5 text-xs leading-relaxed text-muted-foreground">
           <li>
             <strong>Encryption in Transit:</strong> All web traffic, API routes, and external API
-            requests (to GitHub, Google, and PostgreSQL) are enforced over HTTPS with TLS.
+            requests (to GitHub, Google, and MongoDB Atlas) are enforced over TLS.
           </li>
           <li>
             <strong>Secure Cookies:</strong> Session tokens are stored in HTTP-only, secure,

@@ -62,7 +62,7 @@ MergePilot AI is configured as a pnpm monorepo. Follow these steps to set up you
 
 - **Node.js**: v18.18.0 or later (Node.js 20+ recommended)
 - **pnpm**: v9.15.0 or later (`npm install -g pnpm`)
-- **PostgreSQL**: A running PostgreSQL database instance (local PostgreSQL, Neon, Supabase, or Render PostgreSQL)
+- **MongoDB Atlas**: A running MongoDB instance or cluster (MongoDB Atlas or local MongoDB)
 - **GitHub Account**: Required to configure a GitHub OAuth application for local testing
 - **Google Gemini API Key**: Required for AI PR intelligence features (obtainable from [Google AI Studio](https://aistudio.google.com/))
 
@@ -90,8 +90,9 @@ cp .env.example .env.local
 Fill in the required values:
 
 ```env
-# PostgreSQL connection string
-DATABASE_URL="postgresql://user:password@localhost:5432/mergepilot"
+# MongoDB connection string
+DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority"
+MONGODB_URI="mongodb+srv://<username>:<password>@cluster0.rb9bbij.mongodb.net/mergepilot?retryWrites=true&w=majority"
 
 # 32-character secret for signing JWT session tokens (generate with: openssl rand -hex 32)
 AUTH_SECRET="your_32_character_hex_secret_here"
@@ -115,16 +116,12 @@ GEMINI_API_KEY="your_google_gemini_api_key"
 4. Set **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`.
 5. Copy the generated **Client ID** and create a **Client Secret** to add to your `.env.local`.
 
-### 5. Apply Database Schema
+### 5. Initialize Database Collections
 
-Push the Drizzle ORM schema to your PostgreSQL database:
+Ensure all MongoDB collections and unique indexes are created:
 
 ```bash
-# Push schema directly to database
-pnpm db:push
-
-# (Optional) Launch visual Drizzle Studio to inspect database tables
-pnpm db:studio
+pnpm db:init
 ```
 
 ### 6. Start the Development Server
@@ -166,19 +163,18 @@ mergepilot-ai/
 │   └── ui/                   # Reusable UI primitives (buttons, cards, badges)
 ├── config/                   # Navigation, environment, and site configuration
 ├── db/
-│   └── schema.ts             # Drizzle ORM PostgreSQL schema definitions
+│   └── models.ts             # MongoDB document schemas and interfaces
 ├── features/                 # Domain feature modules (dashboard, repositories, pulls)
 ├── lib/                      # Shared utility functions and formatting helpers
 ├── server/
 │   ├── ai/                   # Gemini client, prompt templates, and Zod schemas
-│   ├── auth.ts               # Auth.js (NextAuth) configuration & Drizzle adapter
-│   ├── db.ts                 # PostgreSQL database connection pool
+│   ├── auth.ts               # Auth.js (NextAuth) configuration & MongoDB adapter
+│   ├── db.ts                 # MongoDB Atlas database connection pool
 │   ├── github/               # Octokit client, PR context retrieval, budgeting
 │   ├── risk/                 # Deterministic risk engine and scoring synthesis
 │   └── services/             # Database persistence and caching services
 ├── tests/                    # Vitest unit and integration test suites
-├── vitest.config.ts          # Vitest test runner configuration
-└── drizzle.config.ts         # Drizzle Kit configuration
+└── vitest.config.ts          # Vitest test runner configuration
 ```
 
 ---

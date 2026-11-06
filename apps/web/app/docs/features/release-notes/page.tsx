@@ -85,29 +85,24 @@ export default function ReleaseNotesPage() {
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
             When an analysis completes, MergePilot persists the release note draft directly in the{" "}
-            <code>release_notes</code> PostgreSQL table (<code>db/schema.ts</code>):
+            <code>release_notes</code> MongoDB collection (<code>db/models.ts</code>):
           </p>
 
           <DocsCodeBlock
             language="typescript"
-            filename="db/schema.ts"
-            code={`export const releaseNoteTypeEnum = pgEnum("release_note_type", [
-  "bugfix",
-  "feature",
-  "breaking",
-  "misc"
-]);
+            filename="db/models.ts"
+            code={`export type ReleaseNoteType = "bugfix" | "feature" | "breaking" | "misc";
 
-export const releaseNotes = pgTable("release_notes", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  analysisId: uuid("analysis_id").notNull().references(() => analyses.id, { onDelete: "cascade" }),
-  repositoryId: uuid("repository_id").notNull().references(() => repositories.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  body: text("body").notNull(),
-  type: releaseNoteTypeEnum("type").notNull().default("misc"),
-  isPublished: boolean("is_published").notNull().default(false),
-  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow()
-});`}
+export interface ReleaseNoteDoc {
+  id: string; // unique UUID
+  analysisId: string;
+  repositoryId: string;
+  title: string;
+  body: string;
+  type: ReleaseNoteType;
+  isPublished: boolean;
+  createdAt: Date;
+}`}
           />
 
           <p className="text-xs leading-relaxed text-muted-foreground">

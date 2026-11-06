@@ -63,10 +63,10 @@ export default function ArchitecturePage() {
                 │                   │                  │
                 ▼                   ▼                  ▼
 ┌───────────────────────┐ ┌──────────────────┐ ┌─────────────────────────┐
-│ GitHub Service Layer  │ │  PostgreSQL DB   │ │ Deterministic Engine    │
-│ • Octokit REST Client │ │  • Drizzle ORM   │ │ • Regex Pattern Rules   │
-│ • Token Resolution    │ │  • Relations     │ │ • Destructive SQL Check │
-│ • 45K Patch Budgeting │ │  • JSONB Columns │ │ • Missing Test Detector │
+│ GitHub Service Layer  │ │  MongoDB Atlas   │ │ Deterministic Engine    │
+│ • Octokit REST Client │ │  • Native Driver │ │ • Regex Pattern Rules   │
+│ • Token Resolution    │ │  • Collections   │ │ • Destructive SQL Check │
+│ • 45K Patch Budgeting │ │  • Indexes & TTL │ │ • Missing Test Detector │
 └───────────────┬───────┘ └─────────┬────────┘ └───────────┬─────────────┘
                 │                   │                      │
                 └─────────────┐     │     ┌────────────────┘
@@ -105,11 +105,11 @@ export default function ArchitecturePage() {
 
             <div className="rounded-xl border border-border/80 bg-card p-4">
               <span className="font-mono text-xs font-semibold text-foreground">
-                Database & ORM
+                Database & Driver
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
-                PostgreSQL database hosted on Neon/Render, mapped with Drizzle ORM type-safe schemas
-                and relations.
+                MongoDB Atlas database cluster, accessed with the official native MongoDB driver and
+                typed collections.
               </p>
             </div>
 
@@ -119,7 +119,7 @@ export default function ArchitecturePage() {
               </span>
               <p className="mt-1 text-xs text-muted-foreground">
                 Auth.js v5 (NextAuth) with GitHub OAuth provider, stateless JWT session strategy,
-                and Drizzle adapter.
+                and MongoDB adapter.
               </p>
             </div>
 
@@ -152,8 +152,8 @@ export default function ArchitecturePage() {
             </li>
             <li>
               <strong>Token Persistence:</strong> When the user logs in via GitHub OAuth, Auth.js
-              passes the GitHub <code>access_token</code> to the Drizzle adapter, which securely
-              stores it in the PostgreSQL <code>accounts</code> table.
+              passes the GitHub <code>access_token</code> to the MongoDB adapter, which securely
+              stores it in the MongoDB <code>accounts</code> collection.
             </li>
             <li>
               <strong>Per-Request Client:</strong> When an API route calls the GitHub API,{" "}
@@ -242,7 +242,7 @@ export default function ArchitecturePage() {
             Database & Relational Model
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Defined in <code>db/schema.ts</code>, the schema links users, repositories, pull
+            Defined in <code>db/models.ts</code>, the schema links users, repositories, pull
             requests, analyses, and release notes:
           </p>
 

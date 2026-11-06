@@ -1,9 +1,11 @@
-import { and, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { analyses, pullRequests, repositories } from "@/db/schema";
 import { auth } from "@/server/auth";
-import { db } from "@/server/db";
+import {
+  getAnalysesCollection,
+  getPullRequestsCollection,
+  getRepositoriesCollection
+} from "@/server/db";
 import { GitHubServiceError, getRepositoryPullRequests } from "@/server/github";
 
 export async function GET(
@@ -43,35 +45,29 @@ export async function GET(
       userId: session.user.id
     });
 
-    // Check if any of these PRs have been analyzed in the database
+    // Check if any of these PRs have been analyzed in MongoDB
     if (prs.length > 0) {
       try {
-        const repoRecord = (
-          await db
-            .select()
-            .from(repositories)
-            .where(eq(repositories.fullName, `${owner}/${repo}`))
-            .limit(1)
-        )[0];
+        const repositoriesCollection = await getRepositoriesCollection();
+        const pullRequestsCollection = await getPullRequestsCollection();
+        const analysesCollection = await getAnalysesCollection();
+
+        const repoRecord = await repositoriesCollection.findOne({ fullName: `${owner}/${repo}` });
 
         if (repoRecord) {
           const prNumbers = prs.map((p) => p.number);
-          const prRecords = await db
-            .select()
-            .from(pullRequests)
-            .where(
-              and(
-                eq(pullRequests.repositoryId, repoRecord.id),
-                inArray(pullRequests.number, prNumbers)
-              )
-            );
+          const prRecords = await pullRequestsCollection
+            .find({
+              repositoryId: repoRecord.id,
+              number: { $in: prNumbers }
+            })
+            .toArray();
 
           if (prRecords.length > 0) {
             const prRecordIds = prRecords.map((r) => r.id);
-            const prAnalyses = await db
-              .select()
-              .from(analyses)
-              .where(inArray(analyses.pullRequestId, prRecordIds));
+            const prAnalyses = await analysesCollection
+              .find({ pullRequestId: { $in: prRecordIds } })
+              .toArray();
 
             const analysisByPrRecordId = new Map(prAnalyses.map((a) => [a.pullRequestId, a]));
             const prRecordByNumber = new Map(prRecords.map((r) => [r.number, r]));
@@ -86,7 +82,10 @@ export async function GET(
                     riskLevel:
                       (analysis.riskLevel as "low" | "medium" | "high" | "critical") || "low",
                     riskScore: analysis.riskScore,
-                    analyzedAt: analysis.createdAt.toISOString()
+                    analyzedAt: (analysis.createdAt instanceof Date
+                      ? analysis.createdAt
+                      : new Date(analysis.createdAt)
+                    ).toISOString()
                   };
                 }
               }

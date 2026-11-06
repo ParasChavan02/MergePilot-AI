@@ -1,17 +1,11 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 
 import { env } from "@/config/env";
-import { users, accounts, sessions, verificationTokens } from "@/db/schema";
-import { db } from "@/server/db";
+import { clientPromise, getAccountsCollection } from "@/server/db";
 
-const adapter = DrizzleAdapter(db, {
-  usersTable: users,
-  accountsTable: accounts,
-  sessionsTable: sessions,
-  verificationTokensTable: verificationTokens
-});
+const adapter = MongoDBAdapter(clientPromise);
 
 export const {
   handlers: { GET, POST },
@@ -61,25 +55,18 @@ export const {
 
         if (resolvedUserId && account.provider && account.providerAccountId) {
           try {
-            await db
-              .insert(accounts)
-              .values({
-                userId: resolvedUserId,
-                type: account.type,
+            const accountsCollection = await getAccountsCollection();
+            await accountsCollection.updateOne(
+              {
                 provider: account.provider,
-                providerAccountId: account.providerAccountId,
-                access_token: account.access_token ?? null,
-                refresh_token: account.refresh_token ?? null,
-                expires_at: account.expires_at ?? null,
-                token_type: account.token_type ?? null,
-                scope: account.scope ?? null,
-                id_token: account.id_token ?? null,
-                session_state: (account.session_state as string) ?? null
-              })
-              .onConflictDoUpdate({
-                target: [accounts.provider, accounts.providerAccountId],
-                set: {
+                providerAccountId: String(account.providerAccountId)
+              },
+              {
+                $set: {
                   userId: resolvedUserId,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: String(account.providerAccountId),
                   access_token: account.access_token ?? null,
                   refresh_token: account.refresh_token ?? null,
                   expires_at: account.expires_at ?? null,
@@ -88,9 +75,11 @@ export const {
                   id_token: account.id_token ?? null,
                   session_state: (account.session_state as string) ?? null
                 }
-              });
+              },
+              { upsert: true }
+            );
           } catch (error) {
-            console.error("Failed to persist OAuth account tokens:", error);
+            console.error("Failed to persist OAuth account tokens to MongoDB:", error);
           }
         }
       }
