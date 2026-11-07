@@ -9,7 +9,7 @@ dotenv.config();
 process.env.DATABASE_URL =
   process.env.MONGODB_URI ||
   process.env.DATABASE_URL ||
-  "mongodb+srv://paraschavan0201_db_user:8SDcMxmRzXZW9Hwx@cluster0.rb9bbij.mongodb.net/mergepilot_test?retryWrites=true&w=majority";
+  "mongodb://127.0.0.1:27017/mergepilot_test";
 process.env.MONGODB_URI = process.env.DATABASE_URL;
 process.env.AUTH_SECRET = process.env.AUTH_SECRET || "mock-secret-for-test-suite-minimum-32-chars";
 process.env.GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "mock_github_client_id";
